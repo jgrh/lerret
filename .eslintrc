@@ -1,0 +1,7 @@
+env:
+    es6: true
+    node: true
+extends: eslint:recommended
+rules:
+    // Stylistic
+    semi: [2, always]

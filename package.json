@@ -1,0 +1,37 @@
+{
+  "name": "lerret",
+  "version": "0.1.0",
+  "description": "A static site generator for image galleries.",
+  "author": "Jonathan Hewer <jonhewer@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/jgrh/lerret.git"
+  },
+  "bin": "bin/lerret",
+  "scripts": {
+    "lint": "eslint lib test",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "bluebird": "^3.1.1",
+    "commander": "^2.9.0",
+    "exif-parser": "^0.1.9",
+    "fs-extra": "^0.26.4",
+    "gm": "^1.21.1",
+    "jade": "^1.11.0",
+    "js-yaml": "^3.5.2",
+    "lodash": "^3.10.1",
+    "pretty-hrtime": "^1.0.1",
+    "winston": "^2.1.1"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "chai-as-promised": "^5.2.0",
+    "eslint": "^1.10.3",
+    "mocha": "^2.3.4",
+    "rewire": "^2.5.1",
+    "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0"
+  }
+}
