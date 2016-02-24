@@ -5,8 +5,8 @@
   "author": "Jonathan Hewer <jonhewer@gmail.com>",
   "license": "Apache-2.0",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/jgrh/lerret.git"
+    "type": "git",
+    "url": "https://github.com/jgrh/lerret.git"
   },
   "bin": "bin/lerret",
   "scripts": {
@@ -21,7 +21,7 @@
     "gm": "^1.21.1",
     "jade": "^1.11.0",
     "js-yaml": "^3.5.2",
-    "lodash": "^3.10.1",
+    "lodash": "^4.5.1",
     "pretty-hrtime": "^1.0.1",
     "winston": "^2.1.1"
   },

@@ -81,7 +81,7 @@ describe("content/images.js", function() {
             const image3 = { id: "image3", order: 3 };
             const sortBy = "order";
             const sortOrder = "desc";
-            const sorted = _.sortByOrder([image1, image2, image3], sortBy, sortOrder);
+            const sorted = _.orderBy([image1, image2, image3], sortBy, sortOrder);
 
             listSubdirectories.returns(Promise.resolve(["", "", ""]));
             loadImage

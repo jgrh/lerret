@@ -81,7 +81,7 @@ describe("content/albums.js", function() {
             const album3 = { id: "album3", order: 3 };
             const sortBy = "order";
             const sortOrder = "desc";
-            const sorted = _.sortByOrder([album1, album2, album3], sortBy, sortOrder);
+            const sorted = _.orderBy([album1, album2, album3], sortBy, sortOrder);
 
             listSubdirectories.returns(Promise.resolve(["", "", ""]));
             loadAlbum
