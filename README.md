@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/jgrh/lerret.svg?branch=master)](https://travis-ci.org/jgrh/lerret)
 [![Dependency Status](https://david-dm.org/jgrh/lerret.svg)](https://david-dm.org/jgrh/lerret)
 [![devDependency Status](https://david-dm.org/jgrh/lerret/dev-status.svg)](https://david-dm.org/jgrh/lerret#info=devDependencies)
+[![Coverage Status](https://coveralls.io/repos/github/jgrh/lerret/badge.svg?branch=master)](https://coveralls.io/github/jgrh/lerret?branch=master)
 
 Lerret is a simple yet extensible static site generator for image oriented sites.
 

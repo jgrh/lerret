@@ -11,7 +11,8 @@
   "bin": "bin/lerret",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "mocha"
+    "test": "mocha",
+    "test-ci": "istanbul cover _mocha --report lcovonly  && istanbul-coveralls"
   },
   "dependencies": {
     "bluebird": "^3.1.1",
@@ -28,7 +29,10 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "^5.2.0",
+    "coveralls": "^2.11.6",
     "eslint": "^2.2.0",
+    "istanbul": "^0.4.2",
+    "istanbul-coveralls": "^1.0.3",
     "mocha": "^2.3.4",
     "rewire": "^2.5.1",
     "sinon": "^1.17.2",
