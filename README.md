@@ -1,6 +1,8 @@
 # Lerret
 
 [![Build Status](https://travis-ci.org/jgrh/lerret.svg?branch=master)](https://travis-ci.org/jgrh/lerret)
+[![Dependency Status](https://david-dm.org/jgrh/lerret.svg)](https://david-dm.org/jgrh/lerret)
+[![devDependency Status](https://david-dm.org/jgrh/lerret/dev-status.svg)](https://david-dm.org/jgrh/lerret#info=devDependencies)
 
 Lerret is a simple yet extensible static site generator for image oriented sites.
 
