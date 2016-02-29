@@ -1,11 +1,13 @@
 # Lerret
 
 [![Build Status](https://travis-ci.org/jgrh/lerret.svg?branch=master)](https://travis-ci.org/jgrh/lerret)
+[![Coverage Status](https://coveralls.io/repos/github/jgrh/lerret/badge.svg?branch=master)](https://coveralls.io/github/jgrh/lerret?branch=master)
 [![Dependency Status](https://david-dm.org/jgrh/lerret.svg)](https://david-dm.org/jgrh/lerret)
 [![devDependency Status](https://david-dm.org/jgrh/lerret/dev-status.svg)](https://david-dm.org/jgrh/lerret#info=devDependencies)
-[![Coverage Status](https://coveralls.io/repos/github/jgrh/lerret/badge.svg?branch=master)](https://coveralls.io/github/jgrh/lerret?branch=master)
 
-Lerret is a simple yet extensible static site generator for image oriented sites.
+Lerret is a simple static site generator for image oriented sites. Whilst usable out of the box, Lerret's behaviour can be easily customised and extended through its plugin framework.
+
+Lerret takes care of templating and image repurposing. Lerret doesn't come with any built in tools for generating stylesheets, minifying Javascript, or packaging and deploying your sites. Instead, it's recommended that you use your favourite tools directly to supplement what Lerret does well.
 
 ## Getting Started
 
@@ -130,9 +132,7 @@ The following configuration keys are available.
 
 ### Writing your own plugins
 
-The term "plugin" suggests that it is possible to write and use your own in your Lerret projects. Good news - it is!
-
-Lerret looks for additional plugins within the configured `pluginDirectory`. Plugins are just regular Node.js modules (files with an extension of `.js` or directories containing a file named `index.js`) that export an object with the following attributes.
+Lerret looks for additional plugins within your project's configured `pluginDirectory`. Plugins are just regular Node.js modules (files with an extension of `.js` or directories containing a file named `index.js`) that export an object with the following attributes.
 
 * `name` (required) - The name of the plugin.
 * `processSite` (optional) - A function which is called once with the full content map.
@@ -158,7 +158,7 @@ Note that at least one of `processSite`, `processAlbum` or `processImage` must b
 
 * `image` - The current image.
 * `index` - The index of the current image.
-* `length` - The number of image.
+* `length` - The number of images.
 * `album` - The image's album.
 * `site` - The full site content map.
 * `config` - Lerret's config module.
