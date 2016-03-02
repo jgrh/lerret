@@ -114,7 +114,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 plugin.processSite.should.have.been.calledWith(content, config);
             });
         });
@@ -131,7 +131,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 plugin.processAlbum.should.have.been.calledWith(content.albums[0], 0, 3, content, config);
                 plugin.processAlbum.should.have.been.calledWith(content.albums[1], 1, 3, content, config);
                 plugin.processAlbum.should.have.been.calledWith(content.albums[2], 2, 3, content, config);
@@ -153,7 +153,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 plugin.processImage.should.have.been.calledWith(content.albums[0].images[0], 0, 3, content.albums[0], content, config);
                 plugin.processImage.should.have.been.calledWith(content.albums[0].images[1], 1, 3, content.albums[0], content, config);
                 plugin.processImage.should.have.been.calledWith(content.albums[0].images[2], 2, 3, content.albums[0], content, config);
@@ -174,7 +174,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 plugin.processSite.should.have.been.called;
                 plugin.processAlbum.should.have.been.called;
                 plugin.processImage.should.have.been.called;
@@ -200,7 +200,7 @@ describe("plugins/plugins.js", function() {
             sut.installPlugin(pluginB);
             sut.installPlugin(pluginC);
 
-            sut.getPluginSequence([pluginB.name, pluginA.name, pluginC.name])(content).then(() => {
+            return sut.getPluginSequence([pluginB.name, pluginA.name, pluginC.name])(content).then(() => {
                 sinon.assert.callOrder(pluginB.processSite, pluginA.processSite, pluginC.processSite);
             });
         });
@@ -222,7 +222,7 @@ describe("plugins/plugins.js", function() {
             sut.installPlugin(pluginA);
             sut.installPlugin(pluginB);
 
-            sut.getPluginSequence([pluginA.name, pluginB.name])(content).then(() => {
+            return sut.getPluginSequence([pluginA.name, pluginB.name])(content).then(() => {
                 pluginB.processSite.should.have.been.calledWith(contentNew);
             });
         });
@@ -239,7 +239,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(result => {
+            return sut.getPluginSequence([plugin.name])(content).then(result => {
                 result.should.eql(contentNew);
             });
         });
@@ -262,7 +262,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(result => {
+            return sut.getPluginSequence([plugin.name])(content).then(result => {
                 result.should.eql(contentNew);
             });
         });
@@ -285,7 +285,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(result => {
+            return sut.getPluginSequence([plugin.name])(content).then(result => {
                 result.should.eql(contentNew);
             });
         });
@@ -302,7 +302,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 content.should.eql(contentClone);
             });
         });
@@ -322,7 +322,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 content.should.eql(contentClone);
             });
         });
@@ -342,7 +342,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 content.should.eql(contentClone);
             });
         });
@@ -362,7 +362,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 content.should.eql(contentClone);
             });
         });
@@ -376,7 +376,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 logInfo.should.have.been.calledWith("Calling plugin %s.", plugin.name);
             });
         });
@@ -393,7 +393,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 timeStamp.should.have.been.calledWith("start");
                 timeSince.should.have.been.calledWith("start");
                 logInfo.should.have.been.calledWith("Plugin %s finished in %s.", plugin.name, duration);
@@ -411,7 +411,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 sinon.assert.callOrder(timeStamp, plugin.processSite);
                 sinon.assert.callOrder(timeStamp, plugin.processAlbum);
                 sinon.assert.callOrder(timeStamp, plugin.processImage);
@@ -429,7 +429,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).then(() => {
+            return sut.getPluginSequence([plugin.name])(content).then(() => {
                 sinon.assert.callOrder(plugin.processSite, timeSince);
                 sinon.assert.callOrder(plugin.processAlbum, timeSince);
                 sinon.assert.callOrder(plugin.processImage, timeSince);
