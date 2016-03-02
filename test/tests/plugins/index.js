@@ -173,7 +173,7 @@ describe("plugins/index.js", function() {
             });
         });
 
-        it("should log an error if project plugin cannot be loaded", function() {
+        it("should throw and log an error if project plugin cannot be loaded", function() {
             const error = "error";
             const pluginFilename = "plugin.js";
 
@@ -182,7 +182,7 @@ describe("plugins/index.js", function() {
             statAsync.returns(Promise.resolve({ isDirectory: () => false }));
             requireModule.throws(new Error(error));
 
-            return sut.initPlugins().catch(() => {
+            return sut.initPlugins().should.be.rejectedWith(Error).then(() => {
                 logError.should.have.been.calledWith("Cannot load module %s, $s", path.resolve(pluginFilename), error);
             });
         });
@@ -226,12 +226,12 @@ describe("plugins/index.js", function() {
             });
         });
 
-        it("should log an error if plugins are not configured", function () {
+        it("should throw and log an error if plugins are not configured", function () {
             const error = "error";
 
             getConfig.withArgs("plugins").throws(new Error(error));
 
-            return sut.callPlugins("").catch(() => {
+            return sut.callPlugins("").should.be.rejectedWith(Error).then(() => {
                 logError.should.have.been.calledWith(error);
             });
         });

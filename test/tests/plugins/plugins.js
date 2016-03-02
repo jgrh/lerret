@@ -448,7 +448,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).catch(() => {
+            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(Error).then(() => {
                 logError.should.have.been.calledWith("Plugin %s threw an error, %s", plugin.name, error);
             });
         });
@@ -465,7 +465,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).catch(() => {
+            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(Error).then(() => {
                 logError.should.have.been.calledWith("Plugin %s threw an error, %s", plugin.name, error);
             });
         });
@@ -482,7 +482,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            sut.getPluginSequence([plugin.name])(content).catch(() => {
+            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(Error).then(() => {
                 logError.should.have.been.calledWith("Plugin %s threw an error, %s", plugin.name, error);
             });
         });

@@ -46,13 +46,13 @@ describe("content/helpers.js", function() {
             });
         });
 
-        it("should log an error if directory cannot be read", function () {
+        it("should throw and log an error if directory cannot be read", function () {
             const directory = "./";
             const error = "error";
 
             readDirAsync.returns(Promise.resolve().throw(new Error(error)));
 
-            return sut.listSubdirectories(directory).catch(() => {
+            return sut.listSubdirectories(directory).should.be.rejectedWith(Error).then(() => {
                 logError.should.have.been.calledWith("Error reading directory %s, %s", directory, error);
             });
         });
@@ -123,14 +123,14 @@ describe("content/helpers.js", function() {
             });
         });
 
-        it("should log an error if file cannot be read", function () {
+        it("should throw and log an error if file cannot be read", function () {
             const filename = "./path/to/file";
             const error = "error";
 
             readFileAsync.returns(Promise.resolve().throw(new Error(error)));
 
-            return sut.readYaml(filename).catch(() => {
-                logError.should.have.been.calledWith("Error reading file %s, %s", filename, error);
+            return sut.readYaml(filename).should.be.rejectedWith(Error).then(() => {
+                logError.should.have.been.calledWith("Error reading YAML file %s, %s", filename, error);
             });
         });
 
@@ -144,15 +144,15 @@ describe("content/helpers.js", function() {
             });
         });
 
-        it("should log an error if file cannot be parsed", function () {
+        it("should throw and log an error if file cannot be parsed", function () {
             const filename = "./path/to/file";
             const error = "error";
 
             readFileAsync.returns(Promise.resolve());
             safeLoad.throws(new Error(error));
 
-            return sut.readYaml(filename).catch(() => {
-                logError.should.have.been.calledWith("Error reading file %s, %s", filename, error);
+            return sut.readYaml(filename).should.be.rejectedWith(Error).then(() => {
+                logError.should.have.been.calledWith("Error reading YAML file %s, %s", filename, error);
             });
         });
 
