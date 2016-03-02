@@ -141,12 +141,12 @@ Lerret looks for additional plugins within your project's configured `pluginDire
 
 Note that at least one of `processSite`, `processAlbum` or `processImage` must be defined.
 
-`processSite` should be a function that accepts the following arguments. If the function returns a value, then the content map is updated to this value and passed to subsequent plugins.
+`processSite` should be a function that accepts the following arguments. If the function returns a value, the content map is updated to this value and passed to subsequent plugins. If the returned value is a Promise object, it will be followed and its eventual value used.
 
 * `site` - The full site content map.
 * `config` - Lerret's config module.
 
-`processAlbum` should be a function that accepts the following arguments. If the function returns a value, then the album is updated to this value and passed to subsequent plugins.
+`processAlbum` should be a function that accepts the following arguments. If the function returns a value, the album is updated to this value and passed to subsequent plugins. If the returned value is a Promise object, it will be followed and its eventual value used.
 
 * `album` - The current album.
 * `index` - The index of the current album.
@@ -154,7 +154,7 @@ Note that at least one of `processSite`, `processAlbum` or `processImage` must b
 * `site` - The full site content map.
 * `config` - Lerret's config module.
 
-`processImage` should be a function that accepts the following arguments. If the function returns a value, then the image is updated to this value and passed to subsequent plugins.
+`processImage` should be a function that accepts the following arguments. If the function returns a value, the image is updated to this value and passed to subsequent plugins. If the returned values is a Promise object, it will be followed and its eventual value used.
 
 * `image` - The current image.
 * `index` - The index of the current image.
