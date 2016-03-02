@@ -436,6 +436,14 @@ describe("plugins/plugins.js", function() {
             });
         });
 
+        it("should log an error if a plugin is not found", function () {
+            const name = "plugin";
+
+            return sut.getPluginSequence([name])({}).should.be.rejectedWith(Error).then(() => {
+                logError.should.have.been.calledWith("Plugin " + name + " could not be found.");
+            });
+        });
+
         it("should log an error if processSite throws an error", function () {
             const content = { name: "site" };
             const plugin = {
