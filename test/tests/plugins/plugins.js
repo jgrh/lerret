@@ -52,55 +52,34 @@ describe("plugins/plugins.js", function() {
             logVerbose.should.have.been.calledWith("Installing plugin %s.", plugin.name);
         });
 
-        it("should log and throw an error when installing a plugin without a name", function () {
+        it("should throw and log an error when installing a plugin without a name", function () {
             const plugin = {
                 processSite: sandbox.stub()
             };
-            let error;
 
-            try {
-                sut.installPlugin(plugin);
-            } catch (e) {
-                error = e;
-            }
-
+            (() => sut.installPlugin(plugin)).should.throw(Error);
             logError.should.have.been.calledWith("Plugin does not define a name.");
-            error.should.be.defined;
         });
 
-        it("should log and throw an error when installing a plugin without a processSite, processAlbum or processImage function", function () {
+        it("should throw and log an error when installing a plugin without a processSite, processAlbum or processImage function", function () {
             const plugin = {
                 name: "plugin"
             };
-            let error;
 
-            try {
-                sut.installPlugin(plugin);
-            } catch (e) {
-                error = e;
-            }
-
+            (() => sut.installPlugin(plugin)).should.throw(Error);
             logError.should.have.been.calledWith("Plugin " + plugin.name + " does not define a processSite, processAlbum or processImage function.");
-            error.should.be.defined;
         });
 
-        it("should log and throw an error when installing a plugin which shares the name of an already installed plugin", function () {
+        it("should throw and log an error when installing a plugin which shares the name of an already installed plugin", function () {
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
             };
-            let error;
 
             sut.installPlugin(plugin);
 
-            try {
-                sut.installPlugin(plugin);
-            } catch (e) {
-                error = e;
-            }
-
+            (() => sut.installPlugin(plugin)).should.throw(Error);
             logError.should.have.been.calledWith("Plugin " + plugin.name + " already registered.");
-            error.should.be.defined;
         });
     });
 
