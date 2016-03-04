@@ -58,11 +58,11 @@ The following configuration keys are available. Plugin specific configuration is
 * `plugins` (required) - The list of plugins to execute. Plugins should be referred to by their name as referenced in the PLugins section below.
 * `sort` (optional)
     * `albums` (optional)
-        * `property` (optional) - The property of an album to sort on.
-        * `order` (optional, default: `asc`) - The order by which to sort the albums (either `asc` or `desc`).
+        * `property` (optional) - The property, or list of properties, of an album to sort on.
+        * `order` (optional, default: `asc`) - The order, or list of orders, by which to sort the albums (either `asc` or `desc`).
     * `images` (optional)
-        * `property` (optional) - The property of an image to sort on.
-        * `order` (optional, default: `asc`) - The order by which to sort the images (either `asc` or `desc`).
+        * `property` (optional) - The property, or list of properties, of an image to sort on.
+        * `order` (optional, default: `asc`) - The order, or list of orders, by which to sort the images (either `asc` or `desc`).
 * `targetDirectory` (required) - The location Lerret writes the generated site to. The resulting directory structure matches that of the source content directory.
 
 ## Plugins

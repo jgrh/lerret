@@ -75,27 +75,52 @@ describe("content/albums.js", function() {
             });
         });
 
-        it("should sort albums by configured property and order", function () {
+        it("should sort albums by single property and order", function () {
             const album1 = { id: "album1", order: 2 };
             const album2 = { id: "album2", order: 1 };
             const album3 = { id: "album3", order: 3 };
             const sortBy = "order";
             const sortOrder = "desc";
-            const sorted = _.orderBy([album1, album2, album3], sortBy, sortOrder);
 
             listSubdirectories.returns(Promise.resolve(["", "", ""]));
             loadAlbum
-                .onFirstCall().returns(Promise.resolve(_.clone(album1)))
-                .onSecondCall().returns(Promise.resolve(_.clone(album2)))
-                .onThirdCall().returns(Promise.resolve(_.clone(album3)));
+                .onCall(0).returns(Promise.resolve(_.clone(album1)))
+                .onCall(1).returns(Promise.resolve(_.clone(album2)))
+                .onCall(2).returns(Promise.resolve(_.clone(album3)));
             hasConfig.withArgs("sort.albums.property").returns(true);
             getConfig.withArgs("sort.albums.property").returns(sortBy);
             getConfig.withArgs("sort.albums.order", "asc").returns(sortOrder);
 
             return sut.loadAlbums().then(result => {
-                result[0].should.have.property("id", sorted[0].id);
-                result[1].should.have.property("id", sorted[1].id);
-                result[2].should.have.property("id", sorted[2].id);
+                result[0].should.have.property("id", album3.id);
+                result[1].should.have.property("id", album1.id);
+                result[2].should.have.property("id", album2.id);
+            });
+        });
+
+        it("should sort albums by multiple properties and orders", function () {
+            const album1 = { id: "album1", firstOrder: 1, secondOrder: 1 };
+            const album2 = { id: "album2", firstOrder: 2, secondOrder: 1 };
+            const album3 = { id: "album3", firstOrder: 1, secondOrder: 2 };
+            const album4 = { id: "album4", firstOrder: 2, secondOrder: 2 };
+            const sortBy = [ "firstOrder", "secondOrder" ];
+            const sortOrder = [ "asc", "desc" ];
+
+            listSubdirectories.returns(Promise.resolve(["", "", "", ""]));
+            loadAlbum
+                .onCall(0).returns(Promise.resolve(_.clone(album1)))
+                .onCall(1).returns(Promise.resolve(_.clone(album2)))
+                .onCall(2).returns(Promise.resolve(_.clone(album3)))
+                .onCall(3).returns(Promise.resolve(_.clone(album4)));
+            hasConfig.withArgs("sort.albums.property").returns(true);
+            getConfig.withArgs("sort.albums.property").returns(sortBy);
+            getConfig.withArgs("sort.albums.order", "asc").returns(sortOrder);
+
+            return sut.loadAlbums().then(result => {
+                result[0].should.have.property("id", album3.id);
+                result[1].should.have.property("id", album1.id);
+                result[2].should.have.property("id", album4.id);
+                result[3].should.have.property("id", album2.id);
             });
         });
     });

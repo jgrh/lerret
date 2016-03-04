@@ -75,27 +75,52 @@ describe("content/images.js", function() {
             });
         });
 
-        it("should sort images by configured property and order", function () {
+        it("should sort images by single property and order", function () {
             const image1 = { id: "image1", order: 2 };
             const image2 = { id: "image2", order: 1 };
             const image3 = { id: "image3", order: 3 };
             const sortBy = "order";
             const sortOrder = "desc";
-            const sorted = _.orderBy([image1, image2, image3], sortBy, sortOrder);
 
             listSubdirectories.returns(Promise.resolve(["", "", ""]));
             loadImage
-                .onFirstCall().returns(Promise.resolve(_.clone(image1)))
-                .onSecondCall().returns(Promise.resolve(_.clone(image2)))
-                .onThirdCall().returns(Promise.resolve(_.clone(image3)));
+                .onCall(0).returns(Promise.resolve(_.clone(image1)))
+                .onCall(1).returns(Promise.resolve(_.clone(image2)))
+                .onCall(2).returns(Promise.resolve(_.clone(image3)));
             hasConfig.withArgs("sort.images.property").returns(true);
             getConfig.withArgs("sort.images.property").returns(sortBy);
             getConfig.withArgs("sort.images.order", "asc").returns(sortOrder);
 
             return sut.loadImages().then(result => {
-                result[0].should.have.property("id", sorted[0].id);
-                result[1].should.have.property("id", sorted[1].id);
-                result[2].should.have.property("id", sorted[2].id);
+                result[0].should.have.property("id", image3.id);
+                result[1].should.have.property("id", image1.id);
+                result[2].should.have.property("id", image2.id);
+            });
+        });
+
+        it("should sort images by multiple properties and orders", function () {
+            const image1 = { id: "image1", firstOrder: 1, secondOrder: 1 };
+            const image2 = { id: "image2", firstOrder: 2, secondOrder: 1 };
+            const image3 = { id: "image3", firstOrder: 1, secondOrder: 2 };
+            const image4 = { id: "image4", firstOrder: 2, secondOrder: 2 };
+            const sortBy = [ "firstOrder", "secondOrder" ];
+            const sortOrder = [ "asc", "desc" ];
+
+            listSubdirectories.returns(Promise.resolve(["", "", "", ""]));
+            loadImage
+                .onCall(0).returns(Promise.resolve(_.clone(image1)))
+                .onCall(1).returns(Promise.resolve(_.clone(image2)))
+                .onCall(2).returns(Promise.resolve(_.clone(image3)))
+                .onCall(3).returns(Promise.resolve(_.clone(image4)));
+            hasConfig.withArgs("sort.images.property").returns(true);
+            getConfig.withArgs("sort.images.property").returns(sortBy);
+            getConfig.withArgs("sort.images.order", "asc").returns(sortOrder);
+
+            return sut.loadImages().then(result => {
+                result[0].should.have.property("id", image3.id);
+                result[1].should.have.property("id", image1.id);
+                result[2].should.have.property("id", image4.id);
+                result[3].should.have.property("id", image2.id);
             });
         });
     });
