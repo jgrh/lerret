@@ -37,15 +37,21 @@ describe("log", function() {
     });
 
     describe("increaseVerbosity()", function () {
-        it("when called once should increase log level to debug", function () {
+        it("when called once should increase log level from info to debug", function () {
             sut.transports.console.level = "info";
             sut.increaseVerbosity();
             sut.transports.console.level.should.equal("debug");
         });
 
-        it("when called twice should increase log level to verbose", function () {
+        it("when called twice should increase log level from info to verbose", function () {
             sut.transports.console.level = "info";
             sut.increaseVerbosity();
+            sut.increaseVerbosity();
+            sut.transports.console.level.should.equal("verbose");
+        });
+
+        it("does not increase log level beyond verbose", function () {
+            sut.transports.console.level = "verbose";
             sut.increaseVerbosity();
             sut.transports.console.level.should.equal("verbose");
         });
