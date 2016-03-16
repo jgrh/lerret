@@ -4,12 +4,13 @@
 
 describe("cli", function() {
     //system under test
-    const sut = require("../../lib/cli");
+    let sut;
 
     const commander = require("commander");
     const generate = require("../../lib/generate");
     const log = require("../../lib/log");
     const init = require("../../lib/init");
+    const print = require("../../lib/print");
 
     const sandbox = sinon.sandbox.create();
 
@@ -18,15 +19,20 @@ describe("cli", function() {
     let helpCommand;
     let increaseLogVerbosity;
     let initCommand;
+    let printCommand;
 
     beforeEach(function () {
+        sut = require("../../lib/cli");
         generateCommand = sandbox.stub(generate, "generate");
         helpCommand = sandbox.stub(commander, "help");
         increaseLogVerbosity = sandbox.stub(log, "increaseVerbosity");
         initCommand = sandbox.stub(init, "init");
+        printCommand = sandbox.stub(print, "print");
     });
 
     afterEach(function () {
+        delete require.cache[require.resolve("../../lib/cli")];
+        delete require.cache[require.resolve("commander")];
         sandbox.restore();
     });
 
@@ -71,6 +77,32 @@ describe("cli", function() {
             sut();
 
             increaseLogVerbosity.should.be.called;
+        });
+    });
+
+    describe("print command", function () {
+        it("should call print module", function () {
+            process.argv = [ "", "", "print" ];
+
+            sut();
+
+            printCommand.should.be.calledOnce;
+        });
+
+        it("should pass --no-color argument to print module", function () {
+            process.argv = [ "", "", "print", "--no-color" ];
+
+            sut();
+
+            printCommand.should.be.calledWith(sinon.match.has("color", false));
+        });
+
+        it("should pass --no-exif argument to print module", function () {
+            process.argv = [ "", "", "print", "--no-exif" ];
+
+            sut();
+
+            printCommand.should.be.calledWith(sinon.match.has("exif", false));
         });
     });
 });

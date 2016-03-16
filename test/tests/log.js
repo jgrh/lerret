@@ -56,4 +56,12 @@ describe("log", function() {
             sut.transports.console.level.should.equal("verbose");
         });
     });
+
+    describe("setLevel(level)", function () {
+        it("should update level to given value", function () {
+            sut.transports.console.level = "info";
+            sut.setLevel("warn");
+            sut.transports.console.level.should.equal("warn");
+        });
+    });
 });

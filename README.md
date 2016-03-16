@@ -47,6 +47,12 @@ An image is represented by a map containing a key `id` with the image directory'
 
 At present, images must be in JPEG format and named `image.jpg`. The site, album and image YAML files are all optional.
 
+The `print` command outputs the content map to the console in YAML format. This is useful for validating and inspecting your site's content. Note that by default the output includes all exif tags - these may be suppressed using the `--no-exif` argument.
+
+```
+$ lerret print
+```
+
 ## Configuration
 
 Lerret is configured in YAML. The configuration is expected in a file named `lerret.yaml` in your project's root directory, the directory within which the `lerret` command should be executed.
