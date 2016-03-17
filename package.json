@@ -4,6 +4,16 @@
   "description": "A static site generator for image galleries.",
   "author": "Jonathan Hewer <jonhewer@gmail.com>",
   "license": "Apache-2.0",
+  "keywords": [
+    "exif",
+    "gallery",
+    "generator",
+    "image",
+    "site",
+    "photo",
+    "static",
+    "template"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/jgrh/lerret.git"
