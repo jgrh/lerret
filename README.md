@@ -5,7 +5,7 @@
 [![Dependency Status](https://david-dm.org/jgrh/lerret.svg)](https://david-dm.org/jgrh/lerret)
 [![devDependency Status](https://david-dm.org/jgrh/lerret/dev-status.svg)](https://david-dm.org/jgrh/lerret#info=devDependencies)
 
-Lerret is a simple static site generator for image oriented sites. Whilst usable out of the box, Lerret's behaviour can be easily customised and extended through its plugin framework.
+Lerret is a simple static site generator for image oriented sites, powered by [Node.js](http://nodejs.org). Whilst usable out of the box, Lerret's behaviour can be easily customised and extended through its plugin framework.
 
 Lerret takes care of templating and image repurposing. Lerret doesn't come with any built in tools for generating stylesheets, minifying Javascript, or packaging and deploying your sites. Instead, it's recommended that you use your favourite tools directly to supplement what Lerret does well.
 
@@ -19,7 +19,7 @@ $ npm install -g lerret
 
 Alternatively, if your site uses npm as its package manager then you may add Lerret as a dependency in your package.json file.
 
-Once you have Lerret installed, it's simple to create a new project:
+Once you have Lerret installed, it's simple to create a new project using the `init` command.
 
 ```
 $ mkdir my-project
@@ -27,9 +27,18 @@ $ cd my-project
 $ lerret init
 ```
 
-The `init` command creates a starting config file named lerret.yaml and directories named content, plugins and target.
+This creates a starting config file named lerret.yaml and directories named content, plugins and target.
+
+```
+$ ls
+content  lerret.yaml  plugins  target
+```
 
 The `generate` command generates your site, but first you'll need to add some content and configure Lerret.
+
+```
+$ lerret generate
+```
 
 ## Organising your content
 
@@ -173,3 +182,9 @@ The config module that is passed to each provides the following functions. This 
 
 * `get(key, default)` - Returns the configuration value associated with the given key. If the key does not exist then an `Error` is thrown, unless a default value is provided in which case the default is returned.
 * `has(key)` - Returns `true` if the given key exists in your config file.
+
+## Sites Using Lerret
+
+* [www.jonhewer.co.uk](http://www.jonhewer.co.uk) (source: [github/jgrh/www-jonhewer-co-uk](https://github.com/jgrh/www-jonhewer-co-uk))
+
+To add your site here, please submit a pull request.
