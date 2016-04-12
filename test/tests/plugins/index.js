@@ -3,6 +3,9 @@
 /*global afterEach, assert, beforeEach, describe, it, sinon*/
 
 const path = require("path");
+const util = require("util");
+
+const LerretError = require("../../../lib/errors").LerretError;
 
 describe("plugins/index.js", function() {
     //system under test
@@ -25,7 +28,6 @@ describe("plugins/index.js", function() {
     let getPluginSequence;
     let installPlugin;
     let logDebug;
-    let logError;
     let readDirAsync;
     let requireModule;
     let statAsync;
@@ -35,7 +37,6 @@ describe("plugins/index.js", function() {
         getPluginSequence = sandbox.stub(plugins, "getPluginSequence");
         installPlugin = sandbox.stub(plugins, "installPlugin");
         logDebug = sandbox.stub(log, "debug");
-        logError = sandbox.stub(log, "error");
         readDirAsync = sandbox.stub(fs, "readdirAsync");
         requireModule = sandbox.stub(module, "_load");
         statAsync = sandbox.stub(fs, "statAsync");
@@ -173,18 +174,16 @@ describe("plugins/index.js", function() {
             });
         });
 
-        it("should throw and log an error if project plugin cannot be loaded", function() {
-            const error = "error";
+        it("should throw a LerretError if project plugin cannot be loaded", function() {
+            const error = new Error("error");
             const pluginFilename = "plugin.js";
 
             getConfig.returns("");
             readDirAsync.returns(Promise.resolve([pluginFilename]));
             statAsync.returns(Promise.resolve({ isDirectory: () => false }));
-            requireModule.throws(new Error(error));
+            requireModule.throws(error);
 
-            return sut.initPlugins().should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Cannot load module %s, $s", path.resolve(pluginFilename), error);
-            });
+            return sut.initPlugins().should.be.rejectedWith(LerretError, util.format("Cannot load module %s; $s", path.resolve(pluginFilename), error.message));
         });
 
         it("should install project plugin after loading it", function () {
@@ -223,16 +222,6 @@ describe("plugins/index.js", function() {
 
             return sut.callPlugins("").then(() => {
                 getPluginSequence.should.be.calledWith(pluginList);
-            });
-        });
-
-        it("should throw and log an error if plugins are not configured", function () {
-            const error = "error";
-
-            getConfig.withArgs("plugins").throws(new Error(error));
-
-            return sut.callPlugins("").should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith(error);
             });
         });
 

@@ -3,26 +3,26 @@
 /*global afterEach, beforeEach, describe, it, sinon*/
 
 const path = require("path");
+const util = require("util");
+
+const LerretError = require("../../../lib/errors").LerretError;
 
 describe("content/helpers.js", function() {
     //system under test
     const sut = require("../../../lib/content/helpers");
 
     const fs = require("fs");
-    const log = require("../../../lib/log");
     const yaml = require("js-yaml");
 
     const sandbox = sinon.sandbox.create();
 
     //stubs
-    let logError;
     let readDirAsync;
     let readFileAsync;
     let safeLoad;
     let statAsync;
 
     beforeEach(function () {
-        logError = sandbox.stub(log, "error");
         readDirAsync = sandbox.stub(fs, "readdirAsync");
         readFileAsync = sandbox.stub(fs, "readFileAsync");
         safeLoad = sandbox.stub(yaml, "safeLoad");
@@ -46,15 +46,13 @@ describe("content/helpers.js", function() {
             });
         });
 
-        it("should throw and log an error if directory cannot be read", function () {
+        it("should throw a LerretError if directory cannot be read", function () {
             const directory = "./";
-            const error = "error";
+            const error = new Error("error");
 
-            readDirAsync.returns(Promise.resolve().throw(new Error(error)));
+            readDirAsync.returns(Promise.resolve().throw(error));
 
-            return sut.listSubdirectories(directory).should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Error reading directory %s, %s", directory, error);
-            });
+            return sut.listSubdirectories(directory).should.be.rejectedWith(LerretError, util.format("Error reading directory %s; %s", directory, error.message));
         });
 
         it("should prefix subdirectory name with parent directory name", function () {
@@ -123,15 +121,13 @@ describe("content/helpers.js", function() {
             });
         });
 
-        it("should throw and log an error if file cannot be read", function () {
+        it("should throw a LerretError if file cannot be read", function () {
+            const error = new Error("error");
             const filename = "./path/to/file";
-            const error = "error";
 
-            readFileAsync.returns(Promise.resolve().throw(new Error(error)));
+            readFileAsync.returns(Promise.resolve().throw(error));
 
-            return sut.readYaml(filename).should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Error reading YAML file %s, %s", filename, error);
-            });
+            return sut.readYaml(filename).should.be.rejectedWith(LerretError, util.format("Error reading YAML file %s; %s", filename, error.message));
         });
 
         it("should load yaml from file", function () {
@@ -144,16 +140,14 @@ describe("content/helpers.js", function() {
             });
         });
 
-        it("should throw and log an error if file cannot be parsed", function () {
+        it("should throw a LerretError if file cannot be parsed", function () {
+            const error = new Error("error");
             const filename = "./path/to/file";
-            const error = "error";
 
             readFileAsync.returns(Promise.resolve());
-            safeLoad.throws(new Error(error));
+            safeLoad.throws(error);
 
-            return sut.readYaml(filename).should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Error reading YAML file %s, %s", filename, error);
-            });
+            return sut.readYaml(filename).should.be.rejectedWith(LerretError, util.format("Error reading YAML file %s; %s", filename, error.message));
         });
 
         it("should return yaml", function () {

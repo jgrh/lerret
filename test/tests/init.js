@@ -2,6 +2,8 @@
 
 /*global afterEach, beforeEach, describe, it, sinon*/
 
+const util = require("util");
+
 describe("init", function() {
     //system under test
     const sut = require("../../lib/init");
@@ -35,10 +37,22 @@ describe("init", function() {
 
     describe("init()", function () {
         it("should work upon current working directory", function () {
-            readDir.returns(Promise.resolve());
+            readDir.returns(Promise.resolve([]));
+            mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 readDir.should.have.been.calledWith(process.cwd());
+            });
+        });
+
+        it("should log an error if current working directory cannot be read", function () {
+            const error = new Error("error");
+
+            readDir.returns(Promise.resolve().throw(error));
+
+            return sut.init().then(() => {
+                logError.should.have.been.calledWith(util.format("Could not read current working directory; %s", error.message));
             });
         });
 
@@ -62,6 +76,7 @@ describe("init", function() {
         it("should log an info message for creation of content directory", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 logInfo.should.have.been.calledWith("Creating directory %s.", "content");
@@ -71,6 +86,7 @@ describe("init", function() {
         it("should create content directory", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 mkDir.should.have.been.calledWith("content", 0o755);
@@ -80,6 +96,7 @@ describe("init", function() {
         it("should log an info message for creation of content directory", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 logInfo.should.have.been.calledWith("Creating directory %s.", "content");
@@ -87,20 +104,21 @@ describe("init", function() {
         });
 
         it("should log an error if content directory cannot be created", function () {
-            const error = "error";
+            const error = new Error("error");
 
             readDir.returns(Promise.resolve([]));
-            mkDir.withArgs("content", 0o755).returns(Promise.resolve().throw(new Error(error)));
+            mkDir.withArgs("content", 0o755).returns(Promise.resolve().throw(error));
             mkDir.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logError.should.have.been.calledWith("Could not create directory ./%s, %s", "content", error);
+                logError.should.have.been.calledWith(util.format("Could not create directory ./%s; %s", "content", error.message));
             });
         });
 
         it("should create plugins directory", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 mkDir.should.have.been.calledWith("plugins", 0o755);
@@ -110,6 +128,7 @@ describe("init", function() {
         it("should log an info message for creation of plugins directory", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 logInfo.should.have.been.calledWith("Creating directory %s.", "plugins");
@@ -117,20 +136,21 @@ describe("init", function() {
         });
 
         it("should log an error if plugins directory cannot be created", function () {
-            const error = "error";
+            const error = new Error("error");
 
             readDir.returns(Promise.resolve([]));
-            mkDir.withArgs("plugins", 0o755).returns(Promise.resolve().throw(new Error(error)));
+            mkDir.withArgs("plugins", 0o755).returns(Promise.resolve().throw(error));
             mkDir.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logError.should.have.been.calledWith("Could not create directory ./%s, %s", "plugins", error);
+                logError.should.have.been.calledWith(util.format("Could not create directory ./%s; %s", "plugins", error.message));
             });
         });
 
         it("should create target directory", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 mkDir.should.have.been.calledWith("target", 0o755);
@@ -140,6 +160,7 @@ describe("init", function() {
         it("should log an info message for creation of target directory", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 logInfo.should.have.been.calledWith("Creating directory %s.", "target");
@@ -147,20 +168,21 @@ describe("init", function() {
         });
 
         it("should log an error if target directory cannot be created", function () {
-            const error = "error";
+            const error = new Error("error");
 
             readDir.returns(Promise.resolve([]));
-            mkDir.withArgs("target", 0o755).returns(Promise.resolve().throw(new Error(error)));
+            mkDir.withArgs("target", 0o755).returns(Promise.resolve().throw(error));
             mkDir.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logError.should.have.been.calledWith("Could not create directory ./%s, %s", "target", error);
+                logError.should.have.been.calledWith(util.format("Could not create directory ./%s; %s", "target", error.message));
             });
         });
 
         it("should generate yaml config", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 safeDump.should.have.been.calledWith(sinon.match({
@@ -178,6 +200,7 @@ describe("init", function() {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
             safeDump.returns(config);
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 writeFile.should.have.been.calledWith("lerret.yaml", config, sinon.match({ mode: 0o644 }));
@@ -187,6 +210,7 @@ describe("init", function() {
         it("should log an info message for creation of lerret.yaml", function () {
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
+            writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
                 logInfo.should.have.been.calledWith("Creating file lerret.yaml.");
@@ -194,24 +218,20 @@ describe("init", function() {
         });
 
         it("should log an error if config cannot be written", function () {
-            const error = "error";
+            const error = new Error("error");
 
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
-            safeDump.returns("");
-            writeFile.returns(Promise.resolve().throw(new Error(error)));
+            writeFile.returns(Promise.resolve().throw(error));
 
             return sut.init().then(() => {
-                logError.should.have.been.calledWith("Could not create lerret.yaml, %s", error);
+                logError.should.have.been.calledWith(util.format("Could not create lerret.yaml; %s", error.message));
             });
         });
 
         it("should log an info message on success", function () {
-            const config = "config";
-
             readDir.returns(Promise.resolve([]));
             mkDir.returns(Promise.resolve());
-            safeDump.returns(config);
             writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {

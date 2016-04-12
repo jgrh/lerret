@@ -4,6 +4,8 @@
 
 const _ = require("lodash");
 
+const LerretError = require("../../lib/errors").LerretError;
+
 describe("print.js", function() {
     //system under test
     const sut = require("../../lib/print");
@@ -17,12 +19,14 @@ describe("print.js", function() {
 
     //stubs
     let loadContent;
+    let logError;
     let renderJson;
     let setLogLevel;
     let stdoutWrite;
 
     beforeEach(function () {
         loadContent = sandbox.stub(content, "loadContent");
+        logError = sandbox.stub(log, "error");
         renderJson = sandbox.stub(prettyjson, "render");
         setLogLevel = sandbox.stub(log, "setLevel");
         stdoutWrite = sandbox.stub(stdout, "write");
@@ -38,6 +42,16 @@ describe("print.js", function() {
 
             return sut.print({ color: true, exif: true }).then(() => {
                 setLogLevel.should.have.been.calledWith("warn");
+            });
+        });
+
+        it("should log an error if loadContent throws a LerretError", function () {
+            const error = new LerretError("error");
+
+            loadContent.returns(Promise.resolve().throw(error));
+
+            return sut.print({ color: true, exif: true }).then(() => {
+                logError.should.have.been.calledWith(error.message);
             });
         });
 

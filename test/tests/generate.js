@@ -2,6 +2,8 @@
 
 /*global afterEach, beforeEach, describe, it, sinon*/
 
+const LerretError = require("../../lib/errors").LerretError;
+
 describe("generate.js", function() {
     //system under test
     const sut = require("../../lib/generate");
@@ -16,12 +18,14 @@ describe("generate.js", function() {
     let callPlugins;
     let initPlugins;
     let loadContent;
+    let logError;
     let logInfo;
 
     beforeEach(function () {
         callPlugins = sandbox.stub(plugins, "callPlugins");
         initPlugins = sandbox.stub(plugins, "initPlugins");
         loadContent = sandbox.stub(content, "loadContent");
+        logError = sandbox.stub(log, "error");
         logInfo = sandbox.stub(log, "info");
     });
 
@@ -38,11 +42,13 @@ describe("generate.js", function() {
             });
         });
 
-        it("should initilise plugins before calling them", function () {
-            initPlugins.returns(Promise.resolve());
+        it("should log an error if initPlugins throws a LerretError", function () {
+            const error = new LerretError("error");
+
+            initPlugins.returns(Promise.resolve().throw(error));
 
             return sut.generate().then(() => {
-                sinon.assert.callOrder(initPlugins, callPlugins);
+                logError.should.have.been.calledWith(error.message);
             });
         });
 
@@ -54,6 +60,17 @@ describe("generate.js", function() {
             });
         });
 
+        it("should log an error if loadContent throws a LerretError", function () {
+            const error = new LerretError("error");
+
+            initPlugins.returns(Promise.resolve());
+            loadContent.returns(Promise.resolve().throw(error));
+
+            return sut.generate().then(() => {
+                logError.should.have.been.calledWith(error.message);
+            });
+        });
+
         it("should run plugins on content", function () {
             const loaded = "content";
 
@@ -62,6 +79,25 @@ describe("generate.js", function() {
 
             return sut.generate().then(() => {
                 callPlugins.should.have.been.calledWith(loaded);
+            });
+        });
+
+        it("should initilise plugins before running them", function () {
+            initPlugins.returns(Promise.resolve());
+
+            return sut.generate().then(() => {
+                sinon.assert.callOrder(initPlugins, callPlugins);
+            });
+        });
+
+        it("should log an error if callPlugins throws a LerretError", function () {
+            const error = new LerretError("error");
+
+            initPlugins.returns(Promise.resolve());
+            callPlugins.returns(Promise.resolve().throw(error));
+
+            return sut.generate().then(() => {
+                logError.should.have.been.calledWith(error.message);
             });
         });
 

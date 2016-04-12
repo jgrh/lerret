@@ -2,7 +2,10 @@
 
 /*global afterEach, beforeEach, describe, it, sinon*/
 
+const util = require("util");
 const _ = require("lodash");
+
+const LerretError = require("../../../lib/errors").LerretError;
 
 describe("plugins/plugins.js", function() {
     //system under plugin
@@ -16,7 +19,6 @@ describe("plugins/plugins.js", function() {
 
     //stubs
     let createTimer;
-    let logError;
     let logInfo;
     let logVerbose;
     let timeSince;
@@ -24,7 +26,6 @@ describe("plugins/plugins.js", function() {
 
     beforeEach(function () {
         createTimer = sandbox.stub(timer, "create");
-        logError = sandbox.stub(log, "error");
         logInfo = sandbox.stub(log, "info");
         logVerbose = sandbox.stub(log, "verbose");
         timeSince = sandbox.stub();
@@ -52,25 +53,23 @@ describe("plugins/plugins.js", function() {
             logVerbose.should.have.been.calledWith("Installing plugin %s.", plugin.name);
         });
 
-        it("should throw and log an error when installing a plugin without a name", function () {
+        it("should throw a LerretError when installing a plugin without a name", function () {
             const plugin = {
                 processSite: sandbox.stub()
             };
 
-            (() => sut.installPlugin(plugin)).should.throw(Error);
-            logError.should.have.been.calledWith("Plugin does not define a name.");
+            (() => sut.installPlugin(plugin)).should.throw(LerretError, "Plugin does not define a name.");
         });
 
-        it("should throw and log an error when installing a plugin without a processSite, processAlbum or processImage function", function () {
+        it("should throw a LerretError when installing a plugin without a processSite, processAlbum or processImage function", function () {
             const plugin = {
                 name: "plugin"
             };
 
-            (() => sut.installPlugin(plugin)).should.throw(Error);
-            logError.should.have.been.calledWith("Plugin " + plugin.name + " does not define a processSite, processAlbum or processImage function.");
+            (() => sut.installPlugin(plugin)).should.throw(LerretError, util.format("Plugin %s does not define a processSite, processAlbum or processImage function.", plugin.name));
         });
 
-        it("should throw and log an error when installing a plugin which shares the name of an already installed plugin", function () {
+        it("should throw a LerretError when installing a plugin which shares the name of an already installed plugin", function () {
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -78,8 +77,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            (() => sut.installPlugin(plugin)).should.throw(Error);
-            logError.should.have.been.calledWith("Plugin " + plugin.name + " already registered.");
+            (() => sut.installPlugin(plugin)).should.throw(LerretError, util.format("Plugin %s already registered.", plugin.name));
         });
     });
 
@@ -415,63 +413,55 @@ describe("plugins/plugins.js", function() {
             });
         });
 
-        it("should log an error if a plugin is not found", function () {
+        it("should throw a LerretError if a plugin is not found", function () {
             const name = "plugin";
 
-            return sut.getPluginSequence([name])({}).should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Plugin " + name + " could not be found.");
-            });
+            return sut.getPluginSequence([name])({}).should.be.rejectedWith(LerretError, util.format("Plugin %s could not be found.", name));
         });
 
-        it("should log an error if processSite throws an error", function () {
+        it("should throw a LerretError if processSite throws an error", function () {
             const content = { name: "site" };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
             };
-            const error = "error";
+            const error = new Error("error");
 
-            plugin.processSite.returns(Promise.resolve().throw(new Error(error)));
+            plugin.processSite.returns(Promise.resolve().throw(error));
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Plugin %s threw an error, %s", plugin.name, error);
-            });
+            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(LerretError, util.format("Plugin %s threw an error; %s", plugin.name, error.message));
         });
 
-        it("should log an error if processAlbum throws an error", function () {
+        it("should throw a LerretError if processAlbum throws an error", function () {
             const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
             const plugin = {
                 name: "plugin",
                 processAlbum: sandbox.stub()
             };
-            const error = "error";
+            const error = new Error("error");
 
-            plugin.processAlbum.returns(Promise.resolve().throw(new Error(error)));
+            plugin.processAlbum.returns(Promise.resolve().throw(error));
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Plugin %s threw an error, %s", plugin.name, error);
-            });
+            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(LerretError, util.format("Plugin %s threw an error; %s", plugin.name, error.message));
         });
 
-        it("should log an error if processImage throws an error", function () {
+        it("should throw a LerretError if processImage throws an error", function () {
             const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
             const plugin = {
                 name: "plugin",
                 processImage: sandbox.stub()
             };
-            const error = "error";
+            const error = new Error("error");
 
-            plugin.processImage.returns(Promise.resolve().throw(new Error(error)));
+            plugin.processImage.returns(Promise.resolve().throw(error));
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(Error).then(() => {
-                logError.should.have.been.calledWith("Plugin %s threw an error, %s", plugin.name, error);
-            });
+            return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(LerretError, util.format("Plugin %s threw an error; %s", plugin.name, error.message));
         });
     });
 });

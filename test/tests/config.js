@@ -3,19 +3,20 @@
 /*global after, afterEach, beforeEach, describe, it, sinon*/
 
 const path = require("path");
+const util = require("util");
+
+const LerretError = require("../../lib/errors").LerretError;
 
 describe("config", function() {
     //system under test
     let sut;
 
     const fs = require("fs");
-    const log = require("../../lib/log");
     const yaml = require("js-yaml");
 
     const sandbox = sinon.sandbox.create();
 
     //stubs
-    let logError;
     let readFileSync;
     let safeLoad;
 
@@ -27,7 +28,6 @@ describe("config", function() {
         invalidateCacheOfConfigModule();
         sut = require("../../lib/config");
 
-        logError = sandbox.stub(log, "error");
         readFileSync = sandbox.stub(fs, "readFileSync");
         safeLoad = sandbox.stub(yaml, "safeLoad");
     });
@@ -70,22 +70,12 @@ describe("config", function() {
             safeLoad.should.have.been.calledOnce;
         });
 
-        it("should throw an error if config file does not exist", function () {
-            readFileSync.throws("Error");
+        it("should throw a LerretError if config file does not exist", function () {
+            const error = new Error("error");
 
-            (() => sut.get("has")).should.throw(Error);
-        });
+            readFileSync.throws(error);
 
-        it("should log an error if config file does not exist", function () {
-            readFileSync.throws("Error");
-
-            try {
-                sut.get("has");
-            } catch (e) {
-                //do nothing
-            }
-
-            logError.should.have.been.calledWithMatch("Unable to load ./lerret.yaml");
+            (() => sut.get("has")).should.throw(LerretError, util.format("Unable to load ./lerret.yaml; %s", error.message));
         });
 
         it("should return true if key exists", function () {
@@ -137,22 +127,12 @@ describe("config", function() {
             safeLoad.should.have.been.calledOnce;
         });
 
-        it("should throw an error if config file does not exist", function () {
-            readFileSync.throws("Error");
+        it("should throw a LerretError if config file does not exist", function () {
+            const error = new Error("error");
 
-            (() => sut.get("key", "default")).should.throw(Error);
-        });
+            readFileSync.throws(error);
 
-        it("should log an error if config file does not exist", function () {
-            readFileSync.throws("Error");
-
-            try {
-                sut.get("has", "default");
-            } catch (e) {
-                //do nothing
-            }
-
-            logError.should.have.been.calledWithMatch("Unable to load ./lerret.yaml");
+            (() => sut.get("key", "default")).should.throw(LerretError, util.format("Unable to load ./lerret.yaml; %s", error.message));
         });
 
         it("should return value for key if key exists", function () {
@@ -163,10 +143,12 @@ describe("config", function() {
             sut.get("key").should.equal(value);
         });
 
-        it("should throw an error if key doesn't exist and no default provided", function () {
+        it("should throw a LerretError if key doesn't exist and no default provided", function () {
+            const key = "kwy";
+
             safeLoad.returns({});
 
-            (() => sut.get("key")).should.throw(Error);
+            (() => sut.get(key)).should.throw(LerretError, util.format("Configuration parameter %s does not exist", key));
         });
 
         it("should return default if key doesn't exist", function () {
