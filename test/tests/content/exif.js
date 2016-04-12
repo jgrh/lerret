@@ -14,6 +14,7 @@ describe("content/exif.js", function() {
 
     //stubs
     let createExif;
+    let logDebug;
     let logError;
     let openAsync;
     let parseExif;
@@ -21,6 +22,7 @@ describe("content/exif.js", function() {
 
     beforeEach(function () {
         createExif = sandbox.stub(exif, "create");
+        logDebug = sandbox.stub(log, "debug");
         logError = sandbox.stub(log, "error");
         openAsync = sandbox.stub(fs, "openAsync");
         parseExif = sandbox.stub();
@@ -45,14 +47,14 @@ describe("content/exif.js", function() {
             });
         });
 
-        it("should log an error if file cannot be opened", function () {
+        it("should throw and log an error if file cannot be opened", function () {
             const filename = "image.jpg";
             const error = "error";
 
             openAsync.returns(Promise.resolve().throw(new Error(error)));
 
-            return sut.readExif(filename).then(() => {
-                logError.should.have.been.calledWith("Error reading exif from file %s. %s", filename, error);
+            return sut.readExif(filename).should.be.rejectedWith(Error).then(() => {
+                logError.should.have.been.calledWith("Could not read file %s, %s", filename, error);
             });
         });
 
@@ -75,15 +77,15 @@ describe("content/exif.js", function() {
             });
         });
 
-        it("should log an error if file cannot be read", function () {
+        it("should throw and log an error if file cannot be read", function () {
             const filename = "image.jpg";
             const error = "error";
 
             openAsync.returns(Promise.resolve(""));
             readAsync.returns(Promise.resolve().throw(new Error(error)));
 
-            return sut.readExif(filename).then(() => {
-                logError.should.have.been.calledWith("Error reading exif from file %s. %s", filename, error);
+            return sut.readExif(filename).should.be.rejectedWith(Error).then(() => {
+                logError.should.have.been.calledWith("Could not read file %s, %s", filename, error);
             });
         });
 
@@ -98,7 +100,17 @@ describe("content/exif.js", function() {
             });
         });
 
-        it("should log an error if exif parser cannot be created", function () {
+        it("should return an empty object if exif parser cannot be created", function () {
+            openAsync.returns(Promise.resolve(""));
+            readAsync.returns(Promise.resolve([0, 0]));
+            createExif.throws(new Error());
+
+            return sut.readExif("").then(result => {
+                result.should.eql({});
+            });
+        });
+
+        it("should log a debug message if exif parser cannot be created", function () {
             const filename = "image.jpg";
             const error = "error";
 
@@ -107,7 +119,7 @@ describe("content/exif.js", function() {
             createExif.throws(new Error(error));
 
             return sut.readExif(filename).then(() => {
-                logError.should.have.been.calledWith("Error reading exif from file %s. %s", filename, error);
+                logDebug.should.have.been.calledWith("No exif read from file %s, %s", filename, error);
             });
         });
 
@@ -122,7 +134,18 @@ describe("content/exif.js", function() {
             });
         });
 
-        it("should log an error if file contents cannot be parsed", function () {
+        it("should return an empty object if file contents cannot be parsed", function () {
+            openAsync.returns(Promise.resolve(""));
+            readAsync.returns(Promise.resolve([0, 0]));
+            createExif.returns({ parse: parseExif });
+            parseExif.throws(new Error());
+
+            return sut.readExif("").then(result => {
+                result.should.eql({});
+            });
+        });
+
+        it("should log a debug message if file contents cannot be parsed", function () {
             const filename = "image.jpg";
             const error = "error";
 
@@ -132,7 +155,7 @@ describe("content/exif.js", function() {
             parseExif.throws(new Error(error));
 
             return sut.readExif(filename).then(() => {
-                logError.should.have.been.calledWith("Error reading exif from file %s. %s", filename, error);
+                logDebug.should.have.been.calledWith("No exif read from file %s, %s", filename, error);
             });
         });
 
