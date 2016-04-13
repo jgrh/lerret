@@ -79,7 +79,7 @@ describe("init", function() {
             writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logInfo.should.have.been.calledWith("Creating directory %s.", "content");
+                logInfo.should.have.been.calledWith("Creating directory %s", "content");
             });
         });
 
@@ -99,7 +99,7 @@ describe("init", function() {
             writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logInfo.should.have.been.calledWith("Creating directory %s.", "content");
+                logInfo.should.have.been.calledWith("Creating directory %s", "content");
             });
         });
 
@@ -131,7 +131,7 @@ describe("init", function() {
             writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logInfo.should.have.been.calledWith("Creating directory %s.", "plugins");
+                logInfo.should.have.been.calledWith("Creating directory %s", "plugins");
             });
         });
 
@@ -163,7 +163,7 @@ describe("init", function() {
             writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logInfo.should.have.been.calledWith("Creating directory %s.", "target");
+                logInfo.should.have.been.calledWith("Creating directory %s", "target");
             });
         });
 
@@ -213,7 +213,7 @@ describe("init", function() {
             writeFile.returns(Promise.resolve());
 
             return sut.init().then(() => {
-                logInfo.should.have.been.calledWith("Creating file lerret.yaml.");
+                logInfo.should.have.been.calledWith("Creating file lerret.yaml");
             });
         });
 

@@ -50,7 +50,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            logVerbose.should.have.been.calledWith("Installing plugin %s.", plugin.name);
+            logVerbose.should.have.been.calledWith("Installing plugin %s", plugin.name);
         });
 
         it("should throw a LerretError when installing a plugin without a name", function () {
@@ -58,7 +58,7 @@ describe("plugins/plugins.js", function() {
                 processSite: sandbox.stub()
             };
 
-            (() => sut.installPlugin(plugin)).should.throw(LerretError, "Plugin does not define a name.");
+            (() => sut.installPlugin(plugin)).should.throw(LerretError, "Plugin does not define a name");
         });
 
         it("should throw a LerretError when installing a plugin without a processSite, processAlbum or processImage function", function () {
@@ -66,7 +66,7 @@ describe("plugins/plugins.js", function() {
                 name: "plugin"
             };
 
-            (() => sut.installPlugin(plugin)).should.throw(LerretError, util.format("Plugin %s does not define a processSite, processAlbum or processImage function.", plugin.name));
+            (() => sut.installPlugin(plugin)).should.throw(LerretError, util.format("Plugin %s does not define a processSite, processAlbum or processImage function", plugin.name));
         });
 
         it("should throw a LerretError when installing a plugin which shares the name of an already installed plugin", function () {
@@ -77,7 +77,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            (() => sut.installPlugin(plugin)).should.throw(LerretError, util.format("Plugin %s already registered.", plugin.name));
+            (() => sut.installPlugin(plugin)).should.throw(LerretError, util.format("Plugin %s already registered", plugin.name));
         });
     });
 
@@ -354,7 +354,7 @@ describe("plugins/plugins.js", function() {
             sut.installPlugin(plugin);
 
             return sut.getPluginSequence([plugin.name])(content).then(() => {
-                logInfo.should.have.been.calledWith("Calling plugin %s.", plugin.name);
+                logInfo.should.have.been.calledWith("Calling plugin %s", plugin.name);
             });
         });
 
@@ -373,7 +373,7 @@ describe("plugins/plugins.js", function() {
             return sut.getPluginSequence([plugin.name])(content).then(() => {
                 timeStamp.should.have.been.calledWith("start");
                 timeSince.should.have.been.calledWith("start");
-                logInfo.should.have.been.calledWith("Plugin %s finished in %s.", plugin.name, duration);
+                logInfo.should.have.been.calledWith("Plugin %s finished in %s", plugin.name, duration);
             });
         });
 
@@ -416,7 +416,7 @@ describe("plugins/plugins.js", function() {
         it("should throw a LerretError if a plugin is not found", function () {
             const name = "plugin";
 
-            return sut.getPluginSequence([name])({}).should.be.rejectedWith(LerretError, util.format("Plugin %s could not be found.", name));
+            return sut.getPluginSequence([name])({}).should.be.rejectedWith(LerretError, util.format("Plugin %s could not be found", name));
         });
 
         it("should throw a LerretError if processSite throws an error", function () {

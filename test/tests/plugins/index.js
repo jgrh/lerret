@@ -51,7 +51,7 @@ describe("plugins/index.js", function() {
             readDirAsync.returns(Promise.resolve([]));
 
             return sut.initPlugins().then(() => {
-                logDebug.should.have.been.calledWith("Loading built-in plugins.");
+                logDebug.should.have.been.calledWith("Loading built-in plugins");
             });
         });
 
@@ -83,7 +83,7 @@ describe("plugins/index.js", function() {
             readDirAsync.returns(Promise.resolve([]));
 
             return sut.initPlugins().then(() => {
-                logDebug.should.have.been.calledWith("Loading project plugins.");
+                logDebug.should.have.been.calledWith("Loading project plugins");
             });
         });
 

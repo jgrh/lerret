@@ -54,7 +54,7 @@ describe("content/albums.js", function() {
             listSubdirectories.returns(Promise.resolve([directory1, directory2]));
 
             return sut.loadAlbums().then(() => {
-                logInfo.should.have.been.calledWith("Found albums %s.", [path.basename(directory1), path.basename(directory2)].join(", "));
+                logInfo.should.have.been.calledWith("Found albums %s", [path.basename(directory1), path.basename(directory2)].join(", "));
             });
         });
 

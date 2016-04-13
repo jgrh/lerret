@@ -117,7 +117,7 @@ describe("content/exif.js", function() {
             createExif.throws(error);
 
             return sut.readExif(filename).then(() => {
-                logDebug.should.have.been.calledWith("No exif read from file %s, %s", filename, error.message);
+                logDebug.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
             });
         });
 
@@ -153,7 +153,7 @@ describe("content/exif.js", function() {
             parseExif.throws(error);
 
             return sut.readExif(filename).then(() => {
-                logDebug.should.have.been.calledWith("No exif read from file %s, %s", filename, error.message);
+                logDebug.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
             });
         });
 

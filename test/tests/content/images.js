@@ -54,7 +54,7 @@ describe("content/images.js", function() {
             listSubdirectories.returns(Promise.resolve([directory1, directory2]));
 
             return sut.loadImages(album).then(() => {
-                logInfo.should.have.been.calledWith("Found images %s within album %s.", [path.basename(directory1), path.basename(directory2)].join(", "), path.basename(album));
+                logInfo.should.have.been.calledWith("Found images %s within album %s", [path.basename(directory1), path.basename(directory2)].join(", "), path.basename(album));
             });
         });
 

@@ -68,7 +68,7 @@ describe("plugins/jade.js", function() {
             compileFile.returns(sandbox.stub());
 
             return sut.processSite().then(() => {
-                logDebug.should.have.been.calledWith("Rendering home template %s.", homeTemplate);
+                logDebug.should.have.been.calledWith("Rendering home template %s", homeTemplate);
             });
         });
 
@@ -150,7 +150,7 @@ describe("plugins/jade.js", function() {
             compileFile.returns(sandbox.stub());
 
             return sut.processAlbum(album).then(() => {
-                logDebug.should.have.been.calledWith("Rendering album template %s for album %s.", albumTemplate, album.id);
+                logDebug.should.have.been.calledWith("Rendering album template %s for album %s", albumTemplate, album.id);
             });
         });
 
@@ -236,7 +236,7 @@ describe("plugins/jade.js", function() {
             compileFile.returns(sandbox.stub());
 
             return sut.processImage(image, 0, 0, album).then(() => {
-                logDebug.should.have.been.calledWith("Rendering image template %s for image %s/%s.", imageTemplate, album.id, image.id);
+                logDebug.should.have.been.calledWith("Rendering image template %s for image %s/%s", imageTemplate, album.id, image.id);
             });
         });
 

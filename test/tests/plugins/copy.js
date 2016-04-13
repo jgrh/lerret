@@ -51,7 +51,7 @@ describe("plugins/copy.js", function() {
             const image = { id: "image" };
 
             return sut.processImage(image, 0, 0, album).then(() => {
-                logDebug.should.have.been.calledWith("Copying image %s/%s.", album.id, image.id);
+                logDebug.should.have.been.calledWith("Copying image %s/%s", album.id, image.id);
             });
         });
 

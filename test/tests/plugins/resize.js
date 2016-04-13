@@ -72,7 +72,7 @@ describe("plugins/resize.js", function() {
             resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
 
             return sut.processImage(image, 0, 0, album).then(() => {
-                logDebug.should.have.been.calledWith("Resizing image %s/%s to %spx x %spx (%s W x H).", album.id, image.id, width, height, mode);
+                logDebug.should.have.been.calledWith("Resizing image %s/%s to %spx x %spx (%s W x H)", album.id, image.id, width, height, mode);
             });
         });
 
