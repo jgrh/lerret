@@ -135,15 +135,16 @@ Note: in order to use this plugin, please install [GraphicsMagick](http://www.gr
 The following configuration keys are available.
 
 * `resize` (optional) - An array of resize configurations, each containing:
+    * `filename` (required) - The filename to use when writing the repurposed image to the target location.
     * `mode` (optional, default: "max") - One of "max" (resize image, maintaining aspect ratio, treating width and height as maximum values), "min" (resize image, maintaining aspect ratio, treating width and height as minimum values) or "crop" (resize and crop image to the width and height values).
     * `width` (required) - The width.
     * `height` (required) - The height.
+    * `quality` (optional) - The resulting image quality (0 to 100, with 100 being best). If not specified, the GraphicsMagick default is used.
     * `unsharp` (optional) - Sharpen the image with an unsharp mask operator. Please consult the GraphicsMagick [documentation](http://www.graphicsmagick.org/GraphicsMagick.html#details-unsharp) for an explanation of the settings below.
         * `radius` (required)
         * `sigma` (required)
         * `amount` (required)
         * `threshold` (required)
-    * `quality` (optional) - The resulting image quality (0 to 100, with 100 being best). If not specified, the GraphicsMagick default is used.
 
 ### Writing your own plugins
 
