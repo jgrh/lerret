@@ -9,6 +9,8 @@ Lerret is a simple static site generator for image oriented sites, powered by [N
 
 Lerret takes care of templating and image repurposing. Lerret doesn't come with any built in tools for generating stylesheets, minifying Javascript, or packaging and deploying your sites. Instead, it's recommended that you use your favourite tools directly to supplement what Lerret does well.
 
+Lerret supports GIF, JPEG, PNG and TIFF image formats. Lerret will also extract any EXIF tags embedded in your images and make them available to your templates and plugins.
+
 ## Getting Started
 
 In order to use Lerret you need to have Node.js and npm installed. Once you have those, install Lerret as follows:
@@ -40,6 +42,15 @@ The `generate` command generates your site, but first you'll need to add some co
 $ lerret generate
 ```
 
+## Supported image formats
+
+Lerret supports the following image formats (and corresponding file extensions) when both reading and writing images.
+
+* GIF (`.gif`)
+* JPEG (`.jpeg` or `.jpg`)
+* PNG (`.png`)
+* TIFF (`.tif` or `.tiff`)
+
 ## Organising your content
 
 Lerret traverses your project's content directory building up a map of information as follows.
@@ -50,11 +61,11 @@ Each directory immediately beneath the content directory is processed as an albu
 
 An album is represented by a map containing a key `id` with the album directory's name as its value and any other properties from the YAML file `album.yaml`.
 
-Each directory immediately beneath each album directory is processed as an image. A list of images is added to each album map under the key `images`.
+Each directory immediately beneath each album directory is processed as an image. A list of images is added to each album map under the key `images`. Each image directory must contain exactly one image file, named `image` and suffixed with a supported file extension.
 
-An image is represented by a map containing a key `id` with the image directory's name as its value, a key `filename` with the image filename as its value, a key `exif` containing a map of the image's exif tags (if it has any), and any other properties from the YAML file `image.yaml`.
+An image is represented by a map containing a key `id` with the image directory's name as its value, a key `filename` with the image filename as its value, a key `exif` containing a map of the image's EXIF tags (if it has any), and any other properties from the YAML file `image.yaml`.
 
-At present, images must be in JPEG format and named `image.jpg`. The site, album and image YAML files are all optional.
+The site, album and image YAML files are all optional.
 
 The `print` command outputs the content map to the console in YAML format. This is useful for validating and inspecting your site's content. Note that by default the output includes all exif tags - these may be suppressed using the `--no-exif` argument.
 

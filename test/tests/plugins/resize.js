@@ -2,6 +2,7 @@
 
 /*global afterEach, assert, beforeEach, describe, it, sinon*/
 
+const path = require("path");
 const rewire = require("rewire");
 
 describe("plugins/resize.js", function() {
@@ -9,6 +10,7 @@ describe("plugins/resize.js", function() {
     const sut = rewire("../../../lib/plugins/resize");
 
     const config = require("../../../lib/config");
+    const formats = require("../../../lib/formats");
     const log = require("../../../lib/log");
     const writer = require("../../../lib/plugins/writer");
 
@@ -18,6 +20,7 @@ describe("plugins/resize.js", function() {
     let createImageFileStream;
     let crop;
     let getConfig;
+    let getFormat;
     let gm;
     let gravity;
     let hasConfig;
@@ -25,12 +28,14 @@ describe("plugins/resize.js", function() {
     let pipe;
     let quality;
     let resize;
+    let streamAsync;
     let unsharp;
 
     beforeEach(function () {
         createImageFileStream = sandbox.stub(writer, "createImageFileStream");
         crop = sandbox.stub();
         getConfig = sandbox.stub(config, "get");
+        getFormat = sandbox.stub(formats, "getFormat");
         gm = sandbox.stub();
         gravity = sandbox.stub();
         hasConfig = sandbox.stub(config, "has");
@@ -38,6 +43,7 @@ describe("plugins/resize.js", function() {
         pipe = sandbox.stub();
         quality = sandbox.stub();
         resize = sandbox.stub();
+        streamAsync = sandbox.stub();
         unsharp = sandbox.stub();
 
         sut.__set__("gm", gm);
@@ -69,7 +75,8 @@ describe("plugins/resize.js", function() {
             getConfig.withArgs("resize[0].height").returns(height);
             hasConfig.returns(false);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, album).then(() => {
                 logDebug.should.have.been.calledWith("Resizing image %s/%s to %spx x %spx (%s W x H)", album.id, image.id, width, height, mode);
@@ -81,7 +88,8 @@ describe("plugins/resize.js", function() {
 
             getConfig.withArgs("resize").returns([{}]);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 gm.should.have.been.calledWith(image.filename);
@@ -99,7 +107,8 @@ describe("plugins/resize.js", function() {
             getConfig.withArgs("resize[0].height").returns(height);
             hasConfig.returns(false);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 resize.should.have.been.calledWith(width, height);
@@ -117,7 +126,8 @@ describe("plugins/resize.js", function() {
             getConfig.withArgs("resize[0].height").returns(height);
             hasConfig.returns(false);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 resize.should.have.been.calledWith(width, height, "^");
@@ -137,7 +147,8 @@ describe("plugins/resize.js", function() {
             gm.returns({ resize: resize });
             resize.returns({ gravity: gravity });
             gravity.returns({ crop: crop });
-            crop.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            crop.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 resize.should.have.been.calledWith(width, height, "^");
@@ -162,7 +173,8 @@ describe("plugins/resize.js", function() {
             hasConfig.returns(false);
             gm.returns({ resize: resize });
             resize.returns({ unsharp: unsharp });
-            unsharp.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            unsharp.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 unsharp.should.have.been.calledWith(radius, sigma, amount, threshold);
@@ -179,7 +191,8 @@ describe("plugins/resize.js", function() {
             hasConfig.returns(false);
             gm.returns({ resize: resize });
             resize.returns({ quality: quality });
-            quality.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            quality.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 quality.should.have.been.calledWith(qual);
@@ -195,10 +208,47 @@ describe("plugins/resize.js", function() {
             getConfig.withArgs("resize[0].filename").returns(filename);
             hasConfig.returns(false);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, album).then(() => {
                 createImageFileStream.should.have.been.calledWith(album, image, filename);
+            });
+        });
+
+        it("should get target file format based upon the extension of the configured filename", function () {
+            const image = { id: "image" };
+            const album = { id: "album" };
+            const filename = "./output.jpg";
+
+            getConfig.withArgs("resize").returns([{}]);
+            getConfig.withArgs("resize[0].filename").returns(filename);
+            hasConfig.returns(false);
+            gm.returns({ resize: resize });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+
+            return sut.processImage(image, 0, 0, album).then(() => {
+                getFormat.should.have.been.calledWith(path.extname(filename));
+            });
+        });
+
+        it("should stream resized image in the target file format", function () {
+            const image = { id: "image" };
+            const album = { id: "album" };
+            const filename = "./output.jpg";
+            const format = "jpeg";
+
+            getConfig.withArgs("resize").returns([{}]);
+            getConfig.withArgs("resize[0].filename").returns(filename);
+            hasConfig.returns(false);
+            gm.returns({ resize: resize });
+            resize.returns({ streamAsync: streamAsync });
+            getFormat.returns(format);
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+
+            return sut.processImage(image, 0, 0, album).then(() => {
+                streamAsync.should.have.been.calledWith(format);
             });
         });
 
@@ -209,7 +259,8 @@ describe("plugins/resize.js", function() {
 
             getConfig.withArgs("resize").returns([{}]);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
             createImageFileStream.returns(stream);
 
             return sut.processImage(image, 0, 0, album).then(() => {
@@ -222,7 +273,8 @@ describe("plugins/resize.js", function() {
 
             getConfig.withArgs("resize").returns([{}]);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(result => {
                 assert(result === undefined);
@@ -235,7 +287,8 @@ describe("plugins/resize.js", function() {
 
             getConfig.withArgs("resize").returns(config);
             gm.returns({ resize: resize });
-            resize.returns({ streamAsync: () => Promise.resolve({ pipe: pipe }) });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 resize.should.have.callCount(config.length);
