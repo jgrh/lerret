@@ -83,8 +83,8 @@ describe("plugins/resize.js", function() {
             });
         });
 
-        it("should pass image filename to gm", function () {
-            const image = { filename: "./image.jpg" };
+        it("should pass image path to gm", function () {
+            const image = { path: "./image.jpg" };
 
             getConfig.withArgs("resize").returns([{}]);
             gm.returns({ resize: resize });
@@ -92,7 +92,7 @@ describe("plugins/resize.js", function() {
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
-                gm.should.have.been.calledWith(image.filename);
+                gm.should.have.been.calledWith(image.path);
             });
         });
 

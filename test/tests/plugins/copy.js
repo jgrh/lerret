@@ -57,10 +57,10 @@ describe("plugins/copy.js", function() {
 
         it("should create an output stream to the configured filename, defaulting to the current filename", function () {
             const album = { id: "album" };
-            const image = { id: "image", filename: "./path/to/image.jpg" };
+            const image = { id: "image", path: "./path/to/image.jpg" };
             const filename = "image.jpg";
 
-            getConfig.withArgs("copy.filename", path.basename(image.filename)).returns(filename);
+            getConfig.withArgs("copy.filename", path.basename(image.path)).returns(filename);
 
             return sut.processImage(image, 0, 0, album).then(() => {
                 createImageFileStream.should.have.been.calledWith(album, image, filename);
@@ -68,7 +68,7 @@ describe("plugins/copy.js", function() {
         });
 
         it("should create an input stream from the image's filename", function () {
-            const image = { filename: "./path/to/image.jpg" };
+            const image = { path: "./path/to/image.jpg" };
 
             return sut.processImage(image, 0, 0, {}).then(() => {
                 createReadStream.should.have.been.calledWith(image.filename);

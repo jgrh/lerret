@@ -63,7 +63,7 @@ An album is represented by a map containing a key `id` with the album directory'
 
 Each directory immediately beneath each album directory is processed as an image. A list of images is added to each album map under the key `images`. Each image directory must contain exactly one image file, named `image` and suffixed with a supported file extension.
 
-An image is represented by a map containing a key `id` with the image directory's name as its value, a key `filename` with the image filename as its value, a key `exif` containing a map of the image's EXIF tags (if it has any), and any other properties from the YAML file `image.yaml`.
+An image is represented by a map containing a key `id` with the image directory's name as its value, a key `path` with the image file path as its value, a key `exif` containing a map of the image's EXIF tags (if it has any), and any other properties from the YAML file `image.yaml`.
 
 The site, album and image YAML files are all optional.
 

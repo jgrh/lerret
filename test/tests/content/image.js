@@ -125,38 +125,38 @@ describe("content/image.js", function() {
             });
         });
 
-        it("should extend parsed image.yaml with filename", function () {
+        it("should extend parsed image.yaml with path property", function () {
             const directory = "./image-1";
             const extensions = [ "jpg" ];
-            const filename = path.join(directory, "image." + extensions[0]);
+            const imagePath = path.join(directory, "image." + extensions[0]);
 
             getExtensions.returns(extensions);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
             return sut.loadImage(directory).then(result => {
-                result.should.have.property("filename", filename);
+                result.should.have.property("path", imagePath);
             });
         });
 
-        it("should overwrite existing filename property from image.yaml if there is one", function () {
+        it("should overwrite existing path property from image.yaml if there is one", function () {
             const directory = "./image-1";
             const extensions = [ "jpg" ];
-            const filename = path.join(directory, "image." + extensions[0]);
+            const imagePath = path.join(directory, "image." + extensions[0]);
 
             getExtensions.returns(extensions);
             statAsync.returns(Promise.resolve());
-            readYaml.returns(Promise.resolve({ filename: "Original Value"}));
+            readYaml.returns(Promise.resolve({ path: "Original Value"}));
 
             return sut.loadImage(directory).then(result => {
-                result.should.have.property("filename", filename);
+                result.should.have.property("path", imagePath);
             });
         });
 
         it("should parse exif from image file", function () {
             const directory = "./image-1";
             const extensions = [ "jpg" ];
-            const filename = path.join(directory, "image." + extensions[0]);
+            const imagePath = path.join(directory, "image." + extensions[0]);
 
             getExtensions.returns(extensions);
             statAsync.returns(Promise.resolve());
@@ -164,7 +164,7 @@ describe("content/image.js", function() {
             readExif.returns("");
 
             return sut.loadImage(directory).then(() => {
-                readExif.should.have.been.calledWith(filename);
+                readExif.should.have.been.calledWith(imagePath);
             });
         });
 
