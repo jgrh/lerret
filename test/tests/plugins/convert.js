@@ -5,9 +5,11 @@
 const path = require("path");
 const rewire = require("rewire");
 
-describe("plugins/resize.js", function() {
+const LerretError = require("../../../lib/errors").LerretError;
+
+describe("plugins/convert.js", function() {
     //system under test
-    const sut = rewire("../../../lib/plugins/resize");
+    const sut = rewire("../../../lib/plugins/convert");
 
     const config = require("../../../lib/config");
     const formats = require("../../../lib/formats");
@@ -54,7 +56,7 @@ describe("plugins/resize.js", function() {
     });
 
     it("exports name", function () {
-        sut.name.should.equal("resize");
+        sut.name.should.equal("convert");
     });
 
     it("exports processImage", function () {
@@ -65,30 +67,23 @@ describe("plugins/resize.js", function() {
         it("should log an debug message", function () {
             const album = { id: "album" };
             const image = { id: "image" };
-            const mode = "max";
-            const width = 400;
-            const height = 300;
+            const filename = "./output.jpg";
 
-            getConfig.withArgs("resize").returns([{}]);
-            getConfig.withArgs("resize[0].mode", "max").returns(mode);
-            getConfig.withArgs("resize[0].width").returns(width);
-            getConfig.withArgs("resize[0].height").returns(height);
-            hasConfig.returns(false);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns(filename);
+            gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, album).then(() => {
-                logDebug.should.have.been.calledWith("Resizing image %s/%s to %spx x %spx (%s W x H)", album.id, image.id, width, height, mode);
+                logDebug.should.have.been.calledWith("Converting image %s/%s to %s", album.id, image.id, filename);
             });
         });
 
         it("should pass image path to gm", function () {
             const image = { path: "./image.jpg" };
 
-            getConfig.withArgs("resize").returns([{}]);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns([{}]);
+            gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
@@ -96,16 +91,15 @@ describe("plugins/resize.js", function() {
             });
         });
 
-        it("should resize image with maximum dimensions if mode is max", function () {
+        it("should resize image with width and height if configured", function () {
             const image = { id: "image" };
             const width = 400;
             const height = 300;
 
-            getConfig.withArgs("resize").returns([{}]);
-            getConfig.withArgs("resize[0].mode", "max").returns("max");
-            getConfig.withArgs("resize[0].width").returns(width);
-            getConfig.withArgs("resize[0].height").returns(height);
-            hasConfig.returns(false);
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].resize").returns(true);
+            getConfig.withArgs("convert[0].resize.width", null).returns(width);
+            getConfig.withArgs("convert[0].resize.height", null).returns(height);
             gm.returns({ resize: resize });
             resize.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
@@ -115,35 +109,63 @@ describe("plugins/resize.js", function() {
             });
         });
 
-        it("should resize image with minimum dimensions if mode is min", function () {
+        it("should allow width to be null when resizing an image", function () {
             const image = { id: "image" };
-            const width = 400;
+            const width = null;
             const height = 300;
 
-            getConfig.withArgs("resize").returns([{}]);
-            getConfig.withArgs("resize[0].mode", "max").returns("min");
-            getConfig.withArgs("resize[0].width").returns(width);
-            getConfig.withArgs("resize[0].height").returns(height);
-            hasConfig.returns(false);
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].resize").returns(true);
+            getConfig.withArgs("convert[0].resize.width", null).returns(width);
+            getConfig.withArgs("convert[0].resize.height", null).returns(height);
             gm.returns({ resize: resize });
             resize.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
-                resize.should.have.been.calledWith(width, height, "^");
+                resize.should.have.been.calledWith(width, height);
             });
         });
 
-        it("should crop image if mode is crop", function () {
+        it("should allow height to be null when resizing an image", function () {
+            const image = { id: "image" };
+            const width = 400;
+            const height = null;
+
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].resize").returns(true);
+            getConfig.withArgs("convert[0].resize.width", null).returns(width);
+            getConfig.withArgs("convert[0].resize.height", null).returns(height);
+            gm.returns({ resize: resize });
+            resize.returns({ streamAsync: streamAsync });
+            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+
+            return sut.processImage(image, 0, 0, {}).then(() => {
+                resize.should.have.been.calledWith(width, height);
+            });
+        });
+
+        it("should throw a LerretError if both width and height are null when resizing an image", function () {
+            const image = { id: "image" };
+
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].resize").returns(true);
+            getConfig.withArgs("convert[0].resize.width", null).returns(null);
+            getConfig.withArgs("convert[0].resize.height", null).returns(null);
+
+            return sut.processImage(image, 0, 0, {}).should.be.rejectedWith(LerretError, "Resizing requires at least a width or a height");
+        });
+
+        it("should crop image with width and height if configured", function () {
             const image = { id: "image" };
             const width = 400;
             const height = 300;
 
-            getConfig.withArgs("resize").returns([{}]);
-            getConfig.withArgs("resize[0].mode", "max").returns("crop");
-            getConfig.withArgs("resize[0].width").returns(width);
-            getConfig.withArgs("resize[0].height").returns(height);
-            hasConfig.returns(false);
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].resize").returns(true);
+            getConfig.withArgs("convert[0].resize.width", null).returns(width);
+            getConfig.withArgs("convert[0].resize.height", null).returns(height);
+            getConfig.withArgs("convert[0].resize.crop", false).returns(true);
             gm.returns({ resize: resize });
             resize.returns({ gravity: gravity });
             gravity.returns({ crop: crop });
@@ -157,6 +179,30 @@ describe("plugins/resize.js", function() {
             });
         });
 
+        it("should throw a LerretError if width is null when cropping an image", function () {
+            const image = { id: "image" };
+
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].resize").returns(true);
+            getConfig.withArgs("convert[0].resize.width", null).returns(null);
+            getConfig.withArgs("convert[0].resize.height", null).returns(300);
+            getConfig.withArgs("convert[0].resize.crop", false).returns(true);
+
+            return sut.processImage(image, 0, 0, {}).should.be.rejectedWith(LerretError, "Cropping requires both a width and a height");
+        });
+
+        it("should throw a LerretError if height is null when cropping an image", function () {
+            const image = { id: "image" };
+
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].resize").returns(true);
+            getConfig.withArgs("convert[0].resize.width", null).returns(400);
+            getConfig.withArgs("convert[0].resize.height", null).returns(null);
+            getConfig.withArgs("convert[0].resize.crop", false).returns(true);
+
+            return sut.processImage(image, 0, 0, {}).should.be.rejectedWith(LerretError, "Cropping requires both a width and a height");
+        });
+
         it("should sharpen image if configured", function () {
             const image = { id: "image" };
             const radius = 1;
@@ -164,15 +210,13 @@ describe("plugins/resize.js", function() {
             const amount = 3;
             const threshold = 4;
 
-            getConfig.withArgs("resize").returns([{}]);
-            hasConfig.withArgs("resize[0].unsharp").returns(true);
-            getConfig.withArgs("resize[0].unsharp.radius").returns(radius);
-            getConfig.withArgs("resize[0].unsharp.sigma").returns(sigma);
-            getConfig.withArgs("resize[0].unsharp.amount").returns(amount);
-            getConfig.withArgs("resize[0].unsharp.threshold").returns(threshold);
-            hasConfig.returns(false);
-            gm.returns({ resize: resize });
-            resize.returns({ unsharp: unsharp });
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].unsharp").returns(true);
+            getConfig.withArgs("convert[0].unsharp.radius").returns(radius);
+            getConfig.withArgs("convert[0].unsharp.sigma").returns(sigma);
+            getConfig.withArgs("convert[0].unsharp.amount").returns(amount);
+            getConfig.withArgs("convert[0].unsharp.threshold").returns(threshold);
+            gm.returns({ unsharp: unsharp });
             unsharp.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
@@ -185,12 +229,10 @@ describe("plugins/resize.js", function() {
             const image = { id: "image" };
             const qual = 80;
 
-            getConfig.withArgs("resize").returns([{}]);
-            hasConfig.withArgs("resize[0].quality").returns(true);
-            getConfig.withArgs("resize[0].quality").returns(qual);
-            hasConfig.returns(false);
-            gm.returns({ resize: resize });
-            resize.returns({ quality: quality });
+            getConfig.withArgs("convert").returns([{}]);
+            hasConfig.withArgs("convert[0].quality").returns(true);
+            getConfig.withArgs("convert[0].quality").returns(qual);
+            gm.returns({ quality: quality });
             quality.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
@@ -204,11 +246,9 @@ describe("plugins/resize.js", function() {
             const album = { id: "album" };
             const filename = "./output.jpg";
 
-            getConfig.withArgs("resize").returns([{}]);
-            getConfig.withArgs("resize[0].filename").returns(filename);
-            hasConfig.returns(false);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns(filename);
+            gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, album).then(() => {
@@ -221,11 +261,9 @@ describe("plugins/resize.js", function() {
             const album = { id: "album" };
             const filename = "./output.jpg";
 
-            getConfig.withArgs("resize").returns([{}]);
-            getConfig.withArgs("resize[0].filename").returns(filename);
-            hasConfig.returns(false);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns(filename);
+            gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, album).then(() => {
@@ -239,11 +277,9 @@ describe("plugins/resize.js", function() {
             const filename = "./output.jpg";
             const format = "jpeg";
 
-            getConfig.withArgs("resize").returns([{}]);
-            getConfig.withArgs("resize[0].filename").returns(filename);
-            hasConfig.returns(false);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns(filename);
+            gm.returns({ streamAsync: streamAsync });
             getFormat.returns(format);
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
@@ -257,9 +293,8 @@ describe("plugins/resize.js", function() {
             const album = { id: "album" };
             const stream = "stream";
 
-            getConfig.withArgs("resize").returns([{}]);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns([{}]);
+            gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
             createImageFileStream.returns(stream);
 
@@ -271,9 +306,8 @@ describe("plugins/resize.js", function() {
         it("should not return anything", function () {
             const image = { id: "image" };
 
-            getConfig.withArgs("resize").returns([{}]);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns([{}]);
+            gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(result => {
@@ -285,13 +319,12 @@ describe("plugins/resize.js", function() {
             const image = { id: "image" };
             const config = [{}, {}];
 
-            getConfig.withArgs("resize").returns(config);
-            gm.returns({ resize: resize });
-            resize.returns({ streamAsync: streamAsync });
+            getConfig.withArgs("convert").returns(config);
+            gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, {}).then(() => {
-                resize.should.have.callCount(config.length);
+                streamAsync.should.have.callCount(config.length);
                 createImageFileStream.should.have.callCount(config.length);
             });
         });

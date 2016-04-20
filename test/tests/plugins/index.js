@@ -17,9 +17,9 @@ describe("plugins/index.js", function() {
     const module = require("module");
     const plugins = require("../../../lib/plugins/plugins");
 
+    const convert = require("../../../lib/plugins/convert");
     const copy = require("../../../lib/plugins/copy");
     const jade = require("../../../lib/plugins/jade");
-    const resize = require("../../../lib/plugins/resize");
 
     const sandbox = sinon.sandbox.create();
 
@@ -55,6 +55,14 @@ describe("plugins/index.js", function() {
             });
         });
 
+        it("should install built-in plugin convert", function () {
+            readDirAsync.returns(Promise.resolve([]));
+
+            return sut.initPlugins().then(() => {
+                installPlugin.should.have.been.calledWith(convert);
+            });
+        });
+
         it("should install built-in plugin copy", function () {
             readDirAsync.returns(Promise.resolve([]));
 
@@ -68,14 +76,6 @@ describe("plugins/index.js", function() {
 
             return sut.initPlugins().then(() => {
                 installPlugin.should.have.been.calledWith(jade);
-            });
-        });
-
-        it("should install built-in plugin resize", function () {
-            readDirAsync.returns(Promise.resolve([]));
-
-            return sut.initPlugins().then(() => {
-                installPlugin.should.have.been.calledWith(resize);
             });
         });
 

@@ -97,6 +97,32 @@ The following configuration keys are available. Plugin specific configuration is
 
 Lerret includes some core plugins which are documented below.
 
+#### convert
+
+The `convert` plugin may be used to repurpose your images. The plugin supports:
+* resizing and cropping
+* sharpening and quality adjustments
+* conversion to different image formats
+
+It is also possible to convert each image more than once with different settings.
+
+Note: in order to use this plugin, please install [GraphicsMagick](http://www.graphicsmagick.org).
+
+The following configuration keys are available.
+
+* `convert` (optional) - An array of conversion configurations, each containing:
+    * `filename` (required) - The filename to use when writing the repurposed image to the target location.
+    * `quality` (optional) - The resulting image quality (0 to 100, with 100 being best). If not specified, the GraphicsMagick default is used.
+    * `resize` (optional) - Resize the image to fit the width and height values while maintaining the original aspect ratio.
+        * `width` (optional) - The width in pixels. If not set, then the image is resized to the configured height and its width is set accordingly to maintain the aspect ratio.
+        * `height` (optional) - The height in pixels. If not set, then the image is resized to the configured width and its height is set accordingly to maintain the aspect ratio.
+        * `crop` (optional, default: `false`) - Scale and crop the image to the configured width and height. When cropping, both width and height are required.
+    * `unsharp` (optional) - Sharpen the image with an unsharp mask operator. Please consult the GraphicsMagick [documentation](http://www.graphicsmagick.org/GraphicsMagick.html#details-unsharp) for an explanation of the settings below.
+        * `radius` (required)
+        * `sigma` (required)
+        * `amount` (required)
+        * `threshold` (required)
+
 #### copy
 
 The `copy` plugin copies images without modification to the target location. This is useful if you have already processed your images for the web.
@@ -136,26 +162,6 @@ The following configuration keys are available. Paths are relative to the projec
         * `home` (required) - Path to a Jade template for the site home page.
         * `album` (required) - Path to a Jade template for each album page.
         * `image` (required) - Path to a Jade template for each image page.
-
-#### resize
-
-The `resize` plugin may be used to resize and crop your images. It also supports sharpening and quality adjustments. It is possible to resize each image more than once to different sizes.
-
-Note: in order to use this plugin, please install [GraphicsMagick](http://www.graphicsmagick.org).
-
-The following configuration keys are available.
-
-* `resize` (optional) - An array of resize configurations, each containing:
-    * `filename` (required) - The filename to use when writing the repurposed image to the target location.
-    * `mode` (optional, default: "max") - One of "max" (resize image, maintaining aspect ratio, treating width and height as maximum values), "min" (resize image, maintaining aspect ratio, treating width and height as minimum values) or "crop" (resize and crop image to the width and height values).
-    * `width` (required) - The width.
-    * `height` (required) - The height.
-    * `quality` (optional) - The resulting image quality (0 to 100, with 100 being best). If not specified, the GraphicsMagick default is used.
-    * `unsharp` (optional) - Sharpen the image with an unsharp mask operator. Please consult the GraphicsMagick [documentation](http://www.graphicsmagick.org/GraphicsMagick.html#details-unsharp) for an explanation of the settings below.
-        * `radius` (required)
-        * `sigma` (required)
-        * `amount` (required)
-        * `threshold` (required)
 
 ### Writing your own plugins
 
