@@ -104,9 +104,9 @@ The `convert` plugin may be used to repurpose your images. The plugin supports:
 * sharpening and quality adjustments
 * conversion to different image formats
 
-It is also possible to convert each image more than once with different settings.
+It is also possible to repurpose each image more than once with different settings.
 
-Note: in order to use this plugin, please install [GraphicsMagick](http://www.graphicsmagick.org).
+__Note:__ in order to use this plugin, please install [GraphicsMagick](http://www.graphicsmagick.org).
 
 The following configuration keys are available.
 
@@ -116,7 +116,7 @@ The following configuration keys are available.
     * `resize` (optional) - Resize the image to fit the width and height values while maintaining the original aspect ratio.
         * `width` (optional) - The width in pixels. If not set, then the image is resized to the configured height and its width is set accordingly to maintain the aspect ratio.
         * `height` (optional) - The height in pixels. If not set, then the image is resized to the configured width and its height is set accordingly to maintain the aspect ratio.
-        * `crop` (optional, default: `false`) - Scale and crop the image to the configured width and height. When cropping, both width and height are required.
+        * `crop` (optional, default: `false`) - Set to `true` to scale and crop the image to the configured width and height. When cropping, both width and height are required.
     * `unsharp` (optional) - Sharpen the image with an unsharp mask operator. Please consult the GraphicsMagick [documentation](http://www.graphicsmagick.org/GraphicsMagick.html#details-unsharp) for an explanation of the settings below.
         * `radius` (required)
         * `sigma` (required)
