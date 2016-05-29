@@ -78,7 +78,7 @@ describe("plugins/copy.js", function() {
         it("should pipe the input stream to the output stream", function () {
             const stream = "stream";
 
-            createImageFileStream.returns(stream);
+            createImageFileStream.returns(Promise.resolve(stream));
 
             return sut.processImage({}, 0, 0, {}).then(() => {
                 pipe.should.have.been.calledWith(stream);
