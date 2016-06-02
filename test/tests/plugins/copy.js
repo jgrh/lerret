@@ -48,7 +48,7 @@ describe("plugins/copy.js", function() {
     describe("processImage(image, index, length, album)", function () {
         it("should log a debug message", function () {
             const album = { id: "album" };
-            const image = { id: "image" };
+            const image = { id: "image", path: "./path/to/image.jpg" };
 
             return sut.processImage(image, 0, 0, album).then(() => {
                 logDebug.should.have.been.calledWith("Copying image %s/%s", album.id, image.id);
@@ -80,13 +80,13 @@ describe("plugins/copy.js", function() {
 
             createImageFileStream.returns(Promise.resolve(stream));
 
-            return sut.processImage({}, 0, 0, {}).then(() => {
+            return sut.processImage({ path: "./path/to/image.jpg" }, 0, 0, {}).then(() => {
                 pipe.should.have.been.calledWith(stream);
             });
         });
 
         it("should not return anything", function () {
-            return sut.processImage({}, 0, 0, {}).then(result => {
+            return sut.processImage({ path: "./path/to/image" }, 0, 0, {}).then(result => {
                 assert(result === undefined);
             });
         });

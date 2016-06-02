@@ -59,8 +59,8 @@ describe("content/images.js", function() {
         });
 
         it("should load image from each subdirectory and returns them as an array", function () {
-            const directory1 = "./a";
-            const directory2 = "./b";
+            const directory1 = "./path/to/a";
+            const directory2 = "./path/to/b";
             const image1 = { id: "image1" };
             const image2 = { id: "image2" };
 
@@ -68,7 +68,7 @@ describe("content/images.js", function() {
             loadImage.withArgs(directory1).returns(image1);
             loadImage.withArgs(directory2).returns(image2);
 
-            return sut.loadImages().then(result => {
+            return sut.loadImages("./path/to/album").then(result => {
                 result.length.should.equal(2);
                 _.each(image1, (value, key) => result[0].should.have.property(key, value));
                 _.each(image2, (value, key) => result[1].should.have.property(key, value));
@@ -91,7 +91,7 @@ describe("content/images.js", function() {
             getConfig.withArgs("sort.images.property").returns(sortBy);
             getConfig.withArgs("sort.images.order", "asc").returns(sortOrder);
 
-            return sut.loadImages().then(result => {
+            return sut.loadImages("./path/to/album").then(result => {
                 result[0].should.have.property("id", image3.id);
                 result[1].should.have.property("id", image1.id);
                 result[2].should.have.property("id", image2.id);
@@ -116,7 +116,7 @@ describe("content/images.js", function() {
             getConfig.withArgs("sort.images.property").returns(sortBy);
             getConfig.withArgs("sort.images.order", "asc").returns(sortOrder);
 
-            return sut.loadImages().then(result => {
+            return sut.loadImages("./path/to/album").then(result => {
                 result[0].should.have.property("id", image3.id);
                 result[1].should.have.property("id", image1.id);
                 result[2].should.have.property("id", image4.id);

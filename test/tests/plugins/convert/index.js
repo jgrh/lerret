@@ -67,7 +67,7 @@ describe("plugins/convert/index.js", function() {
     describe("processImage(image, index, length, album)", function () {
         it("should log a debug message", function () {
             const album = { id: "album" };
-            const filename = "./output.jpg";
+            const filename = "output.jpg";
             const image = { id: "image" };
 
             getConfig.withArgs("convert").returns([{}]);
@@ -84,6 +84,7 @@ describe("plugins/convert/index.js", function() {
             const image = { path: "./image.jpg" };
 
             getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
@@ -98,6 +99,7 @@ describe("plugins/convert/index.js", function() {
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isResizeConfigured.withArgs("convert[0].").returns(true);
             gm.returns(input);
             applyResize.returns({ streamAsync: streamAsync });
@@ -114,6 +116,7 @@ describe("plugins/convert/index.js", function() {
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isUnsharpConfigured.withArgs("convert[0].").returns(true);
             gm.returns(input);
             applyUnsharp.returns({ streamAsync: streamAsync });
@@ -130,6 +133,7 @@ describe("plugins/convert/index.js", function() {
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isQualityConfigured.withArgs("convert[0].").returns(true);
             gm.returns(input);
             applyQuality.returns({ streamAsync: streamAsync });
@@ -148,6 +152,7 @@ describe("plugins/convert/index.js", function() {
             const unsharpOutput = "unsharpOutput";
 
             getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isResizeConfigured.returns(true);
             isUnsharpConfigured.returns(true);
             isQualityConfigured.returns(true);
@@ -166,7 +171,7 @@ describe("plugins/convert/index.js", function() {
 
         it("should create file output stream to configured filename", function () {
             const album = { id: "album" };
-            const filename = "./output.jpg";
+            const filename = "output.jpg";
             const image = { id: "image" };
 
             getConfig.withArgs("convert").returns([{}]);
@@ -181,7 +186,7 @@ describe("plugins/convert/index.js", function() {
 
         it("should get target file format based upon the extension of the configured filename", function () {
             const album = { id: "album" };
-            const filename = "./output.jpg";
+            const filename = "output.jpg";
             const image = { id: "image" };
 
             getConfig.withArgs("convert").returns([{}]);
@@ -196,7 +201,7 @@ describe("plugins/convert/index.js", function() {
 
         it("should stream resized image in the target file format", function () {
             const album = { id: "album" };
-            const filename = "./output.jpg";
+            const filename = "output.jpg";
             const format = "jpeg";
             const image = { id: "image" };
 
@@ -217,6 +222,7 @@ describe("plugins/convert/index.js", function() {
             const stream = "stream";
 
             getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
             createImageFileStream.returns(stream);
@@ -230,6 +236,7 @@ describe("plugins/convert/index.js", function() {
             const image = { id: "image" };
 
             getConfig.withArgs("convert").returns([{}]);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
@@ -243,6 +250,8 @@ describe("plugins/convert/index.js", function() {
             const image = { id: "image" };
 
             getConfig.withArgs("convert").returns(config);
+            getConfig.withArgs("convert[0].filename").returns("output.jpg");
+            getConfig.withArgs("convert[1].filename").returns("output.jpg");
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
