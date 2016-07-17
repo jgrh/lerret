@@ -130,7 +130,7 @@ describe("plugins/writer.js", function() {
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
             ensureDirAsync.returns(Promise.resolve());
 
-            sut.createAlbumFileStream({ id: "" }, "").then(result => {
+            sut.createAlbumFileStream({ id: "" }, "").then(() => {
                 sinon.assert.callOrder(ensureDirAsync, createWriteStream);
             });
         });
@@ -199,7 +199,7 @@ describe("plugins/writer.js", function() {
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
             ensureDirAsync.returns(Promise.resolve());
 
-            sut.createImageFileStream({ id: "" }, { id: "" }, "").then(result => {
+            sut.createImageFileStream({ id: "" }, { id: "" }, "").then(() => {
                 sinon.assert.callOrder(ensureDirAsync, createWriteStream);
             });
         });
