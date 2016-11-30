@@ -39,7 +39,7 @@ describe("content/image.js", function() {
     describe("loadImage(image)", function () {
         it("should look within supplied directory for a file for each extension", function () {
             const directory = "./image-1";
-            const extensions = [ "gif", "jpg", "png" ];
+            const extensions = [ ".gif", ".jpg", ".png" ];
 
             getExtensions.returns(extensions);
             statAsync.onFirstCall().returns(Promise.resolve());
@@ -47,15 +47,15 @@ describe("content/image.js", function() {
             readYaml.returns(Promise.resolve({}));
 
             return sut.loadImage(directory).then(() => {
-                statAsync.should.have.been.calledWith(path.join(directory, "image." + extensions[0]));
-                statAsync.should.have.been.calledWith(path.join(directory, "image." + extensions[1]));
-                statAsync.should.have.been.calledWith(path.join(directory, "image." + extensions[2]));
+                statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[0]));
+                statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[1]));
+                statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[2]));
             });
         });
 
         it("should throw a LerretError if no image file is found", function () {
             const directory = "./image-1";
-            const extensions = [ "gif", "jpg", "png" ];
+            const extensions = [ ".gif", ".jpg", ".png" ];
 
             getExtensions.returns(extensions);
             statAsync.returns(Promise.resolve().throw(new Error()));
@@ -66,7 +66,7 @@ describe("content/image.js", function() {
 
         it("should throw a LerretError if more than one image file is found", function () {
             const directory = "./image-1";
-            const extensions = [ "gif", "jpg", "png" ];
+            const extensions = [ ".gif", ".jpg", ".png" ];
 
             getExtensions.returns(extensions);
             statAsync.onFirstCall().returns(Promise.resolve());
@@ -80,7 +80,7 @@ describe("content/image.js", function() {
         it("should read image.yaml from supplied directory", function () {
             const directory = "./image-1";
 
-            getExtensions.returns([ "jpg" ]);
+            getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
@@ -92,7 +92,7 @@ describe("content/image.js", function() {
         it("should return parsed image.yaml", function () {
             const image = { name: "Image 1" };
 
-            getExtensions.returns([ "jpg" ]);
+            getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve(_.clone(image)));
 
@@ -104,7 +104,7 @@ describe("content/image.js", function() {
         it("should extend parsed image.yaml with id", function () {
             const directory = "./image-1";
 
-            getExtensions.returns([ "jpg" ]);
+            getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
@@ -116,7 +116,7 @@ describe("content/image.js", function() {
         it("should overwrite existing id property from image.yaml if there is one", function () {
             const directory = "./image-1";
 
-            getExtensions.returns([ "jpg" ]);
+            getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({ id: "Original Value"}));
 
@@ -127,8 +127,8 @@ describe("content/image.js", function() {
 
         it("should extend parsed image.yaml with path property", function () {
             const directory = "./image-1";
-            const extensions = [ "jpg" ];
-            const imagePath = path.join(directory, "image." + extensions[0]);
+            const extensions = [ ".jpg" ];
+            const imagePath = path.join(directory, "image" + extensions[0]);
 
             getExtensions.returns(extensions);
             statAsync.returns(Promise.resolve());
@@ -141,8 +141,8 @@ describe("content/image.js", function() {
 
         it("should overwrite existing path property from image.yaml if there is one", function () {
             const directory = "./image-1";
-            const extensions = [ "jpg" ];
-            const imagePath = path.join(directory, "image." + extensions[0]);
+            const extensions = [ ".jpg" ];
+            const imagePath = path.join(directory, "image" + extensions[0]);
 
             getExtensions.returns(extensions);
             statAsync.returns(Promise.resolve());
@@ -155,8 +155,8 @@ describe("content/image.js", function() {
 
         it("should parse exif from image file", function () {
             const directory = "./image-1";
-            const extensions = [ "jpg" ];
-            const imagePath = path.join(directory, "image." + extensions[0]);
+            const extensions = [ ".jpg" ];
+            const imagePath = path.join(directory, "image" + extensions[0]);
 
             getExtensions.returns(extensions);
             statAsync.returns(Promise.resolve());
@@ -172,7 +172,7 @@ describe("content/image.js", function() {
             const directory = "./image-1";
             const exif = "exif";
 
-            getExtensions.returns([ "jpg" ]);
+            getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
             readExif.returns(exif);
@@ -185,7 +185,7 @@ describe("content/image.js", function() {
         it("should overwrite existing exif property from image.yaml if there is one", function () {
             const exif = "exif";
 
-            getExtensions.returns([ "jpg" ]);
+            getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({ exif: "Original Value"}));
             readExif.returns(exif);
