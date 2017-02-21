@@ -25,28 +25,28 @@
     "test-ci": "istanbul cover _mocha --report lcovonly  && istanbul-coveralls"
   },
   "dependencies": {
-    "bluebird": "^3.4.6",
+    "bluebird": "^3.4.7",
     "commander": "^2.9.0",
     "exif-parser": "^0.1.9",
-    "fs-extra": "^1.0.0",
+    "fs-extra": "^2.0.0",
     "gm": "^1.23.0",
     "jade": "^1.11.0",
-    "js-yaml": "^3.7.0",
-    "lodash": "^4.17.2",
+    "js-yaml": "^3.8.1",
+    "lodash": "^4.17.4",
     "pretty-hrtime": "^1.0.3",
-    "prettyjson": "^1.2.0",
-    "winston": "^2.3.0"
+    "prettyjson": "^1.2.1",
+    "winston": "^2.3.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "coveralls": "^2.11.15",
-    "eslint": "^3.11.1",
+    "coveralls": "^2.11.16",
+    "eslint": "^3.16.1",
     "istanbul": "^0.4.5",
     "istanbul-coveralls": "^1.0.3",
     "mocha": "^3.2.0",
     "rewire": "^2.5.2",
-    "sinon": "^1.17.6",
+    "sinon": "^1.17.7",
     "sinon-chai": "^2.8.0"
   }
 }
