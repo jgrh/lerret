@@ -61,7 +61,7 @@ describe("plugins/convert/index.js", function() {
     });
 
     it("exports processImage", function () {
-        sut.processImage.should.be.defined;
+        sut.processImage.should.not.be.undefined;
     });
 
     describe("processImage(image, index, length, album)", function () {

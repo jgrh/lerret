@@ -49,15 +49,15 @@ describe("plugins/jade.js", function() {
     });
 
     it("exports processSite", function () {
-        sut.processSite.should.be.defined;
+        sut.processSite.should.not.be.undefined;
     });
 
     it("exports processAlbum", function () {
-        sut.processAlbum.should.be.defined;
+        sut.processAlbum.should.not.be.undefined;
     });
 
     it("exports processImage", function () {
-        sut.processImage.should.be.defined;
+        sut.processImage.should.not.be.undefined;
     });
 
     describe("processSite(content)", function () {
