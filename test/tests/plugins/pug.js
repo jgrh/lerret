@@ -4,12 +4,12 @@
 
 const path = require("path");
 
-describe("plugins/jade.js", function() {
+describe("plugins/pug.js", function() {
     //system under test
-    const sut = require("../../../lib/plugins/jade");
+    const sut = require("../../../lib/plugins/pug");
 
     const config = require("../../../lib/config");
-    const jade = require("jade");
+    const pug = require("pug");
     const log = require("../../../lib/log");
     const module = require("module");
     const writer = require("../../../lib/plugins/writer");
@@ -27,7 +27,7 @@ describe("plugins/jade.js", function() {
     let writeRootFile;
 
     beforeEach(function () {
-        compileFile = sandbox.stub(jade, "compileFile");
+        compileFile = sandbox.stub(pug, "compileFile");
         getConfig = sandbox.stub(config, "get");
         hasConfig = sandbox.stub(config, "has");
         logDebug = sandbox.stub(log, "debug");
@@ -37,7 +37,7 @@ describe("plugins/jade.js", function() {
         writeRootFile = sandbox.stub(writer, "writeRootFile");
 
         //default stubs
-        hasConfig.withArgs("jade.helpers").returns(false);
+        hasConfig.withArgs("pug.helpers").returns(false);
     });
 
     afterEach(function () {
@@ -45,7 +45,7 @@ describe("plugins/jade.js", function() {
     });
 
     it("exports name", function () {
-        sut.name.should.equal("jade");
+        sut.name.should.equal("pug");
     });
 
     it("exports processSite", function () {
@@ -62,9 +62,9 @@ describe("plugins/jade.js", function() {
 
     describe("processSite(content)", function () {
         it("should log a debug message", function () {
-            const homeTemplate = "./home.jade";
+            const homeTemplate = "./home.pug";
 
-            getConfig.withArgs("jade.templates.home").returns(homeTemplate);
+            getConfig.withArgs("pug.templates.home").returns(homeTemplate);
             compileFile.returns(sandbox.stub());
 
             return sut.processSite().then(() => {
@@ -73,9 +73,9 @@ describe("plugins/jade.js", function() {
         });
 
         it("should compile configured home template", function () {
-            const homeTemplate = "./home.jade";
+            const homeTemplate = "./home.pug";
 
-            getConfig.withArgs("jade.templates.home").returns(homeTemplate);
+            getConfig.withArgs("pug.templates.home").returns(homeTemplate);
             compileFile.returns(sandbox.stub());
 
             return sut.processSite().then(() => {
@@ -97,8 +97,8 @@ describe("plugins/jade.js", function() {
         it("should load helpers modules if configured", function () {
             const helpersFilename = "./helpers.js";
 
-            hasConfig.withArgs("jade.helpers").returns(true);
-            getConfig.withArgs("jade.helpers").returns(helpersFilename);
+            hasConfig.withArgs("pug.helpers").returns(true);
+            getConfig.withArgs("pug.helpers").returns(helpersFilename);
             compileFile.returns(sandbox.stub());
 
             return sut.processSite().then(() => {
@@ -110,8 +110,8 @@ describe("plugins/jade.js", function() {
             const homeRenderer = sandbox.stub();
             const helpers = { name: "helpers" };
 
-            hasConfig.withArgs("jade.helpers").returns(true);
-            getConfig.withArgs("jade.helpers").returns("");
+            hasConfig.withArgs("pug.helpers").returns(true);
+            getConfig.withArgs("pug.helpers").returns("");
             requireModule.returns(helpers);
             compileFile.returns(homeRenderer);
 
@@ -143,10 +143,10 @@ describe("plugins/jade.js", function() {
 
     describe("processAlbum(album, index, length, content)", function () {
         it("should log a debug message", function () {
-            const albumTemplate = "./album.jade";
+            const albumTemplate = "./album.pug";
             const album = { id: "album" };
 
-            getConfig.withArgs("jade.templates.album").returns(albumTemplate);
+            getConfig.withArgs("pug.templates.album").returns(albumTemplate);
             compileFile.returns(sandbox.stub());
 
             return sut.processAlbum(album).then(() => {
@@ -155,9 +155,9 @@ describe("plugins/jade.js", function() {
         });
 
         it("should compile configured album template", function () {
-            const albumTemplate = "./album.jade";
+            const albumTemplate = "./album.pug";
 
-            getConfig.withArgs("jade.templates.album").returns(albumTemplate);
+            getConfig.withArgs("pug.templates.album").returns(albumTemplate);
             compileFile.returns(sandbox.stub());
 
             return sut.processAlbum({}).then(() => {
@@ -181,8 +181,8 @@ describe("plugins/jade.js", function() {
         it("should load helpers modules if configured", function () {
             const helpersFilename = "./helpers.js";
 
-            hasConfig.withArgs("jade.helpers").returns(true);
-            getConfig.withArgs("jade.helpers").returns(helpersFilename);
+            hasConfig.withArgs("pug.helpers").returns(true);
+            getConfig.withArgs("pug.helpers").returns(helpersFilename);
             compileFile.returns(sandbox.stub());
 
             return sut.processAlbum({}).then(() => {
@@ -194,8 +194,8 @@ describe("plugins/jade.js", function() {
             const albumRenderer = sandbox.stub();
             const helpers = { name: "helpers" };
 
-            hasConfig.withArgs("jade.helpers").returns(true);
-            getConfig.withArgs("jade.helpers").returns("");
+            hasConfig.withArgs("pug.helpers").returns(true);
+            getConfig.withArgs("pug.helpers").returns("");
             requireModule.returns(helpers);
             compileFile.returns(albumRenderer);
 
@@ -228,11 +228,11 @@ describe("plugins/jade.js", function() {
 
     describe("processImage(image, index, length, album, content)", function () {
         it("should log a debug message", function () {
-            const imageTemplate = "./image.jade";
+            const imageTemplate = "./image.pug";
             const album = { id: "album" };
             const image = { id: "image" };
 
-            getConfig.withArgs("jade.templates.image").returns(imageTemplate);
+            getConfig.withArgs("pug.templates.image").returns(imageTemplate);
             compileFile.returns(sandbox.stub());
 
             return sut.processImage(image, 0, 0, album).then(() => {
@@ -241,9 +241,9 @@ describe("plugins/jade.js", function() {
         });
 
         it("should compile configured image template", function () {
-            const imageTemplate = "./image.jade";
+            const imageTemplate = "./image.pug";
 
-            getConfig.withArgs("jade.templates.image").returns(imageTemplate);
+            getConfig.withArgs("pug.templates.image").returns(imageTemplate);
             compileFile.returns(sandbox.stub());
 
             return sut.processImage({}, 0, 0, {}).then(() => {
@@ -269,8 +269,8 @@ describe("plugins/jade.js", function() {
         it("should load helpers modules if configured", function () {
             const helpersFilename = "./helpers.js";
 
-            hasConfig.withArgs("jade.helpers").returns(true);
-            getConfig.withArgs("jade.helpers").returns(helpersFilename);
+            hasConfig.withArgs("pug.helpers").returns(true);
+            getConfig.withArgs("pug.helpers").returns(helpersFilename);
             compileFile.returns(sandbox.stub());
 
             return sut.processImage({}, 0, 0, {}).then(() => {
@@ -282,8 +282,8 @@ describe("plugins/jade.js", function() {
             const imageRenderer = sandbox.stub();
             const helpers = { name: "helpers" };
 
-            hasConfig.withArgs("jade.helpers").returns(true);
-            getConfig.withArgs("jade.helpers").returns("");
+            hasConfig.withArgs("pug.helpers").returns(true);
+            getConfig.withArgs("pug.helpers").returns("");
             requireModule.returns(helpers);
             compileFile.returns(imageRenderer);
 

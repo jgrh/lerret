@@ -11,6 +11,12 @@ Lerret takes care of templating and image repurposing. Lerret doesn't come with 
 
 Lerret supports GIF, JPEG, PNG and TIFF image formats. Lerret will also extract any EXIF tags embedded in your images and make them available to your templates and plugins.
 
+## Release Notes
+
+### 1.0.0
+
+The `jade` plugin has been removed and replaced with `pug`. See [Migrating to Pug 2](https://pugjs.org/api/migration-v2.html) for details of how to migrate your templates.
+
 ## Getting Started
 
 In order to use Lerret you need to have Node.js and npm installed. Once you have those, install Lerret as follows:
@@ -132,9 +138,9 @@ The following configuration keys are available.
 * `copy` (optional)
     * `filename` (optional, default: the source image's filename) - The filename to use when copying the image to the target location.
 
-#### jade
+#### pug
 
-The `jade` plugin may be used to render [Jade](http://jade-lang.com) templates to HTML. The plugin expects three templates to exist: a home page template, an album template and an image template.
+The `pug` plugin may be used to render [Pug](https://pugjs.com) templates to HTML. The plugin expects three templates to exist: a home page template, an album template and an image template.
 
 The home page template is rendered once. It is provided with a context containing the following keys.
 
@@ -156,12 +162,12 @@ The image template is rendered once per image. It is provided with a context con
 
 The following configuration keys are available. Paths are relative to the project root.
 
-* `jade` (optional)
+* `pug` (optional)
     * `helpers` (optional) - Path to a Node.js module of helper methods to pass to the template.
     * `templates` (required)
-        * `home` (required) - Path to a Jade template for the site home page.
-        * `album` (required) - Path to a Jade template for each album page.
-        * `image` (required) - Path to a Jade template for each image page.
+        * `home` (required) - Path to a Pug template for the site home page.
+        * `album` (required) - Path to a Pug template for each album page.
+        * `image` (required) - Path to a Pug template for each image page.
 
 ### Writing your own plugins
 

@@ -19,7 +19,7 @@ describe("plugins/index.js", function() {
 
     const convert = require("../../../lib/plugins/convert");
     const copy = require("../../../lib/plugins/copy");
-    const jade = require("../../../lib/plugins/jade");
+    const pug = require("../../../lib/plugins/pug");
 
     const sandbox = sinon.sandbox.create();
 
@@ -71,11 +71,11 @@ describe("plugins/index.js", function() {
             });
         });
 
-        it("should install built-in plugin jade", function () {
+        it("should install built-in plugin pug", function () {
             readDirAsync.returns(Promise.resolve([]));
 
             return sut.initPlugins().then(() => {
-                installPlugin.should.have.been.calledWith(jade);
+                installPlugin.should.have.been.calledWith(pug);
             });
         });
 
