@@ -15,7 +15,7 @@ describe("plugins/plugins.js", function() {
     const log = require("../../../lib/log");
     const timer = require("../../../lib/timer");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let createTimer;

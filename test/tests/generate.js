@@ -12,7 +12,7 @@ describe("generate.js", function() {
     const log = require("../../lib/log");
     const plugins = require("../../lib/plugins");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let callPlugins;

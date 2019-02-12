@@ -14,7 +14,7 @@ describe("config", function() {
     const fs = require("fs");
     const yaml = require("js-yaml");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let readFileSync;

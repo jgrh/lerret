@@ -12,7 +12,7 @@ describe("cli", function() {
     const init = require("../../lib/init");
     const print = require("../../lib/print");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let generateCommand;

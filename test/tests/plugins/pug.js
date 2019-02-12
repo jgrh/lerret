@@ -14,7 +14,7 @@ describe("plugins/pug.js", function() {
     const module = require("module");
     const writer = require("../../../lib/plugins/writer");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let compileFile;

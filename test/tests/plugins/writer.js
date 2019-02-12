@@ -11,7 +11,7 @@ describe("plugins/writer.js", function() {
     const config = require("../../../lib/config");
     const fs = require("fs-extra");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let createWriteStream;

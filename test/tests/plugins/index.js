@@ -21,7 +21,7 @@ describe("plugins/index.js", function() {
     const copy = require("../../../lib/plugins/copy");
     const pug = require("../../../lib/plugins/pug");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let getConfig;

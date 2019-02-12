@@ -12,7 +12,7 @@ describe("init", function() {
     const log = require("../../lib/log");
     const yaml = require("js-yaml");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let logError;

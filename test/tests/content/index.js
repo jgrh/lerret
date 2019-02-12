@@ -13,7 +13,7 @@ describe("content/index.js", function() {
     const config = require("../../../lib/config");
     const helpers = require("../../../lib/content/helpers");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let getConfig;

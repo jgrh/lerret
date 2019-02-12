@@ -17,7 +17,7 @@ describe("plugins/convert/index.js", function() {
     const unsharp = require("../../../../lib/plugins/convert/unsharp");
     const writer = require("../../../../lib/plugins/writer");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let applyQuality;

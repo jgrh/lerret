@@ -14,7 +14,7 @@ describe("content/albums.js", function() {
     const helpers = require("../../../lib/content/helpers");
     const log = require("../../../lib/log");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let getConfig;

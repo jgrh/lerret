@@ -12,7 +12,7 @@ describe("content/album.js", function() {
     const helpers = require("../../../lib/content/helpers");
     const images = require("../../../lib/content/images");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let loadImages;

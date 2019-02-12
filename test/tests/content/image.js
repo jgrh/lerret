@@ -17,7 +17,7 @@ describe("content/image.js", function() {
     const fs = require("fs");
     const helpers = require("../../../lib/content/helpers");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let getExtensions;

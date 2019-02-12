@@ -8,7 +8,7 @@ describe("timer.js", function() {
     //system under test
     const sut = rewire("../../lib/timer");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let format;

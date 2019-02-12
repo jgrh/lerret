@@ -14,7 +14,7 @@ describe("content/exif.js", function() {
     const fs = require("fs");
     const log = require("../../../lib/log");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let createExif;

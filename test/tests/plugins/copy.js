@@ -13,7 +13,7 @@ describe("plugins/copy.js", function() {
     const log = require("../../../lib/log");
     const writer = require("../../../lib/plugins/writer");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let createImageFileStream;

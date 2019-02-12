@@ -15,7 +15,7 @@ describe("print.js", function() {
     const stdout = require("../../lib/stdout");
     const prettyjson = require("prettyjson");
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     //stubs
     let loadContent;
