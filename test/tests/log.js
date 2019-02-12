@@ -2,8 +2,6 @@
 
 /*global describe, it*/
 
-const winston = require("winston");
-
 describe("log", function() {
     //system under test
     const sut = require("../../lib/log");
