@@ -15,15 +15,15 @@ describe("plugins/writer.js", function() {
 
     //stubs
     let createWriteStream;
-    let ensureDirAsync;
+    let ensureDir;
     let getConfig;
-    let outputFileAsync;
+    let outputFile;
 
     beforeEach(function () {
         createWriteStream = sandbox.stub(fs, "createWriteStream");
-        ensureDirAsync = sandbox.stub(fs, "ensureDirAsync");
+        ensureDir = sandbox.stub(fs, "ensureDir");
         getConfig = sandbox.stub(config, "get");
-        outputFileAsync = sandbox.stub(fs, "outputFileAsync");
+        outputFile = sandbox.stub(fs, "outputFile");
     });
 
     afterEach(function () {
@@ -37,10 +37,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            outputFileAsync.returns(Promise.resolve());
+            outputFile.returns(Promise.resolve());
 
             return sut.writeRootFile(filename, data).then(() => {
-                outputFileAsync.should.be.calledWith(path.join(targetDirectory, filename), data);
+                outputFile.should.be.calledWith(path.join(targetDirectory, filename), data);
             });
         });
     });
@@ -51,10 +51,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             return sut.createRootFileStream(filename).then(() => {
-                ensureDirAsync.should.be.calledWith(path.dirname(path.join(targetDirectory, filename)));
+                ensureDir.should.be.calledWith(path.dirname(path.join(targetDirectory, filename)));
             });
         });
 
@@ -62,10 +62,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             return sut.createRootFileStream("").then(() => {
-                sinon.assert.callOrder(ensureDirAsync, createWriteStream);
+                sinon.assert.callOrder(ensureDir, createWriteStream);
             });
         });
 
@@ -74,7 +74,7 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             return sut.createRootFileStream(filename).then(() => {
                 createWriteStream.should.be.calledWith(path.join(targetDirectory, filename));
@@ -85,7 +85,7 @@ describe("plugins/writer.js", function() {
             const stream = "stream";
 
             getConfig.returns("");
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
             createWriteStream.returns(Promise.resolve(stream));
 
             return sut.createRootFileStream("").then(result => {
@@ -102,10 +102,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            outputFileAsync.returns(Promise.resolve());
+            outputFile.returns(Promise.resolve());
 
             return sut.writeAlbumFile(album, filename, data).then(() => {
-                outputFileAsync.should.be.calledWith(path.join(targetDirectory, album.id, filename), data);
+                outputFile.should.be.calledWith(path.join(targetDirectory, album.id, filename), data);
             });
         });
     });
@@ -117,10 +117,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             return sut.createAlbumFileStream(album, filename).then(() => {
-                ensureDirAsync.should.be.calledWith(path.dirname(path.join(targetDirectory, album.id, filename)));
+                ensureDir.should.be.calledWith(path.dirname(path.join(targetDirectory, album.id, filename)));
             });
         });
 
@@ -128,10 +128,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             sut.createAlbumFileStream({ id: "" }, "").then(() => {
-                sinon.assert.callOrder(ensureDirAsync, createWriteStream);
+                sinon.assert.callOrder(ensureDir, createWriteStream);
             });
         });
 
@@ -141,7 +141,7 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             return sut.createAlbumFileStream(album, filename).then(() => {
                 createWriteStream.should.be.calledWith(path.join(targetDirectory, album.id, filename));
@@ -152,7 +152,7 @@ describe("plugins/writer.js", function() {
             const stream = "stream";
 
             getConfig.returns("");
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
             createWriteStream.returns(Promise.resolve(stream));
 
             sut.createAlbumFileStream({ id: "" }, "").then(result => {
@@ -170,10 +170,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            outputFileAsync.returns(Promise.resolve());
+            outputFile.returns(Promise.resolve());
 
             return sut.writeImageFile(album, image, filename, data).then(() => {
-                outputFileAsync.should.be.calledWith(path.join(targetDirectory, album.id, image.id, filename), data);
+                outputFile.should.be.calledWith(path.join(targetDirectory, album.id, image.id, filename), data);
             });
         });
     });
@@ -186,10 +186,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             return sut.createImageFileStream(album, image, filename).then(() => {
-                ensureDirAsync.should.be.calledWith(path.dirname(path.join(targetDirectory, album.id, image.id, filename)));
+                ensureDir.should.be.calledWith(path.dirname(path.join(targetDirectory, album.id, image.id, filename)));
             });
         });
 
@@ -197,10 +197,10 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             sut.createImageFileStream({ id: "" }, { id: "" }, "").then(() => {
-                sinon.assert.callOrder(ensureDirAsync, createWriteStream);
+                sinon.assert.callOrder(ensureDir, createWriteStream);
             });
         });
 
@@ -212,7 +212,7 @@ describe("plugins/writer.js", function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
 
             return sut.createImageFileStream(album, image, filename).then(() => {
                 createWriteStream.should.be.calledWith(path.join(targetDirectory, album.id, image.id, filename));
@@ -223,7 +223,7 @@ describe("plugins/writer.js", function() {
             const stream = "stream";
 
             getConfig.returns("");
-            ensureDirAsync.returns(Promise.resolve());
+            ensureDir.returns(Promise.resolve());
             createWriteStream.returns(stream);
 
             sut.createImageFileStream({ id: "" }, { id: "" }, "").then(result => {
