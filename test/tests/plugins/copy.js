@@ -19,14 +19,14 @@ describe("plugins/copy.js", function() {
     let createImageFileStream;
     let createReadStream;
     let getConfig;
-    let logDebug;
+    let logVerbose;
     let pipe;
 
     beforeEach(function () {
         createImageFileStream = sandbox.stub(writer, "createImageFileStream");
         createReadStream = sandbox.stub(fs, "createReadStream");
         getConfig = sandbox.stub(config, "get");
-        logDebug = sandbox.stub(log, "debug");
+        logVerbose = sandbox.stub(log, "verbose");
         pipe = sandbox.stub();
 
         //default stubs
@@ -46,12 +46,12 @@ describe("plugins/copy.js", function() {
     });
 
     describe("processImage(image, index, length, album)", function () {
-        it("should log a debug message", function () {
+        it("should log a verbose message", function () {
             const album = { id: "album" };
             const image = { id: "image", path: "./path/to/image.jpg" };
 
             return sut.processImage(image, 0, 0, album).then(() => {
-                logDebug.should.have.been.calledWith("Copying image %s/%s", album.id, image.id);
+                logVerbose.should.have.been.calledWith("Copying image %s/%s", album.id, image.id);
             });
         });
 

@@ -20,7 +20,7 @@ describe("plugins/pug.js", function() {
     let compileFile;
     let getConfig;
     let hasConfig;
-    let logDebug;
+    let logVerbose;
     let requireModule;
     let writeAlbumFile;
     let writeImageFile;
@@ -30,7 +30,7 @@ describe("plugins/pug.js", function() {
         compileFile = sandbox.stub(pug, "compileFile");
         getConfig = sandbox.stub(config, "get");
         hasConfig = sandbox.stub(config, "has");
-        logDebug = sandbox.stub(log, "debug");
+        logVerbose = sandbox.stub(log, "verbose");
         requireModule = sandbox.stub(module, "_load");
         writeAlbumFile = sandbox.stub(writer, "writeAlbumFile");
         writeImageFile = sandbox.stub(writer, "writeImageFile");
@@ -61,14 +61,14 @@ describe("plugins/pug.js", function() {
     });
 
     describe("processSite(content)", function () {
-        it("should log a debug message", function () {
+        it("should log a verbose message", function () {
             const homeTemplate = "./home.pug";
 
             getConfig.withArgs("pug.templates.home").returns(homeTemplate);
             compileFile.returns(sandbox.stub());
 
             return sut.processSite().then(() => {
-                logDebug.should.have.been.calledWith("Rendering home template %s", homeTemplate);
+                logVerbose.should.have.been.calledWith("Rendering home template %s", homeTemplate);
             });
         });
 
@@ -142,7 +142,7 @@ describe("plugins/pug.js", function() {
     });
 
     describe("processAlbum(album, index, length, content)", function () {
-        it("should log a debug message", function () {
+        it("should log a verbose message", function () {
             const albumTemplate = "./album.pug";
             const album = { id: "album" };
 
@@ -150,7 +150,7 @@ describe("plugins/pug.js", function() {
             compileFile.returns(sandbox.stub());
 
             return sut.processAlbum(album).then(() => {
-                logDebug.should.have.been.calledWith("Rendering album template %s for album %s", albumTemplate, album.id);
+                logVerbose.should.have.been.calledWith("Rendering album template %s for album %s", albumTemplate, album.id);
             });
         });
 
@@ -227,7 +227,7 @@ describe("plugins/pug.js", function() {
     });
 
     describe("processImage(image, index, length, album, content)", function () {
-        it("should log a debug message", function () {
+        it("should log a verbose message", function () {
             const imageTemplate = "./image.pug";
             const album = { id: "album" };
             const image = { id: "image" };
@@ -236,7 +236,7 @@ describe("plugins/pug.js", function() {
             compileFile.returns(sandbox.stub());
 
             return sut.processImage(image, 0, 0, album).then(() => {
-                logDebug.should.have.been.calledWith("Rendering image template %s for image %s/%s", imageTemplate, album.id, image.id);
+                logVerbose.should.have.been.calledWith("Rendering image template %s for image %s/%s", imageTemplate, album.id, image.id);
             });
         });
 

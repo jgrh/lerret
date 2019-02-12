@@ -18,14 +18,14 @@ describe("content/exif.js", function() {
 
     //stubs
     let createExif;
-    let logDebug;
+    let logVerbose;
     let openAsync;
     let parseExif;
     let readAsync;
 
     beforeEach(function () {
         createExif = sandbox.stub(exif, "create");
-        logDebug = sandbox.stub(log, "debug");
+        logVerbose = sandbox.stub(log, "verbose");
         openAsync = sandbox.stub(fs, "openAsync");
         parseExif = sandbox.stub();
         readAsync = sandbox.stub(fs, "readAsync");
@@ -108,7 +108,7 @@ describe("content/exif.js", function() {
             });
         });
 
-        it("should log a debug message if exif parser cannot be created", function () {
+        it("should log a verbose message if exif parser cannot be created", function () {
             const error = new Error("error");
             const filename = "image.jpg";
 
@@ -117,7 +117,7 @@ describe("content/exif.js", function() {
             createExif.throws(error);
 
             return sut.readExif(filename).then(() => {
-                logDebug.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
+                logVerbose.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
             });
         });
 
@@ -143,7 +143,7 @@ describe("content/exif.js", function() {
             });
         });
 
-        it("should log a debug message if file contents cannot be parsed", function () {
+        it("should log a verbose message if file contents cannot be parsed", function () {
             const error = new Error("error");
             const filename = "image.jpg";
 
@@ -153,7 +153,7 @@ describe("content/exif.js", function() {
             parseExif.throws(error);
 
             return sut.readExif(filename).then(() => {
-                logDebug.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
+                logVerbose.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
             });
         });
 

@@ -30,7 +30,7 @@ describe("plugins/convert/index.js", function() {
     let isQualityConfigured;
     let isResizeConfigured;
     let isUnsharpConfigured;
-    let logDebug;
+    let logVerbose;
     let pipe;
     let streamAsync;
 
@@ -45,7 +45,7 @@ describe("plugins/convert/index.js", function() {
         isQualityConfigured = sandbox.stub(quality, "isConfigured");
         isResizeConfigured = sandbox.stub(resize, "isConfigured");
         isUnsharpConfigured = sandbox.stub(unsharp, "isConfigured");
-        logDebug = sandbox.stub(log, "debug");
+        logVerbose = sandbox.stub(log, "verbose");
         pipe = sandbox.stub();
         streamAsync = sandbox.stub();
 
@@ -65,7 +65,7 @@ describe("plugins/convert/index.js", function() {
     });
 
     describe("processImage(image, index, length, album)", function () {
-        it("should log a debug message", function () {
+        it("should log a verbose message", function () {
             const album = { id: "album" };
             const filename = "output.jpg";
             const image = { id: "image" };
@@ -76,7 +76,7 @@ describe("plugins/convert/index.js", function() {
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
             return sut.processImage(image, 0, 0, album).then(() => {
-                logDebug.should.have.been.calledWith("Converting image %s/%s to %s", album.id, image.id, filename);
+                logVerbose.should.have.been.calledWith("Converting image %s/%s to %s", album.id, image.id, filename);
             });
         });
 

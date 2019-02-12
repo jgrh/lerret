@@ -20,14 +20,14 @@ describe("plugins/plugins.js", function() {
     //stubs
     let createTimer;
     let logInfo;
-    let logVerbose;
+    let logDebug;
     let timeSince;
     let timeStamp;
 
     beforeEach(function () {
         createTimer = sandbox.stub(timer, "create");
         logInfo = sandbox.stub(log, "info");
-        logVerbose = sandbox.stub(log, "verbose");
+        logDebug = sandbox.stub(log, "debug");
         timeSince = sandbox.stub();
         timeStamp = sandbox.stub();
 
@@ -42,7 +42,7 @@ describe("plugins/plugins.js", function() {
     });
 
     describe("installPlugin(plugin)", function () {
-        it("should log a verbose message when installing a plugin", function () {
+        it("should log a debug message when installing a plugin", function () {
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -50,7 +50,7 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            logVerbose.should.have.been.calledWith("Installing plugin %s", plugin.name);
+            logDebug.should.have.been.calledWith("Installing plugin %s", plugin.name);
         });
 
         it("should throw a LerretError when installing a plugin without a name", function () {

@@ -27,7 +27,7 @@ describe("plugins/index.js", function() {
     let getConfig;
     let getPluginSequence;
     let installPlugin;
-    let logDebug;
+    let logVerbose;
     let readDirAsync;
     let requireModule;
     let statAsync;
@@ -36,7 +36,7 @@ describe("plugins/index.js", function() {
         getConfig = sandbox.stub(config, "get");
         getPluginSequence = sandbox.stub(plugins, "getPluginSequence");
         installPlugin = sandbox.stub(plugins, "installPlugin");
-        logDebug = sandbox.stub(log, "debug");
+        logVerbose = sandbox.stub(log, "verbose");
         readDirAsync = sandbox.stub(fs, "readdirAsync");
         requireModule = sandbox.stub(module, "_load");
         statAsync = sandbox.stub(fs, "statAsync");
@@ -47,11 +47,11 @@ describe("plugins/index.js", function() {
     });
 
     describe("initPlugins()", function () {
-        it("should log a debug message for installation of built-in plugins", function () {
+        it("should log a verbose message for installation of built-in plugins", function () {
             readDirAsync.returns(Promise.resolve([]));
 
             return sut.initPlugins().then(() => {
-                logDebug.should.have.been.calledWith("Loading built-in plugins");
+                logVerbose.should.have.been.calledWith("Loading built-in plugins");
             });
         });
 
@@ -79,11 +79,11 @@ describe("plugins/index.js", function() {
             });
         });
 
-        it("should log a debug message for installation of project plugins", function () {
+        it("should log a verbose message for installation of project plugins", function () {
             readDirAsync.returns(Promise.resolve([]));
 
             return sut.initPlugins().then(() => {
-                logDebug.should.have.been.calledWith("Loading project plugins");
+                logVerbose.should.have.been.calledWith("Loading project plugins");
             });
         });
 
