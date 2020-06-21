@@ -28,6 +28,7 @@ describe("cli", function() {
         increaseLogVerbosity = sandbox.stub(log, "increaseVerbosity");
         initCommand = sandbox.stub(init, "init");
         printCommand = sandbox.stub(print, "print");
+        sandbox.stub(process, "exit");
     });
 
     afterEach(function () {
