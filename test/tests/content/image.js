@@ -37,7 +37,7 @@ describe("content/image.js", function() {
     });
 
     describe("loadImage(image)", function () {
-        it("should look within supplied directory for a file for each extension", function () {
+        it("should look within supplied directory for a file for each extension", async function () {
             const directory = "./image-1";
             const extensions = [ ".gif", ".jpg", ".png" ];
 
@@ -46,11 +46,11 @@ describe("content/image.js", function() {
             statAsync.returns(Promise.resolve().throw(new Error()));
             readYaml.returns(Promise.resolve({}));
 
-            return sut.loadImage(directory).then(() => {
-                statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[0]));
-                statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[1]));
-                statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[2]));
-            });
+            await sut.loadImage(directory);
+
+            statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[0]));
+            statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[1]));
+            statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[2]));
         });
 
         it("should throw a LerretError if no image file is found", function () {
@@ -77,55 +77,55 @@ describe("content/image.js", function() {
             return sut.loadImage(directory).should.be.rejectedWith(LerretError, util.format("Found more than one image file within %s", directory));
         });
 
-        it("should read image.yaml from supplied directory", function () {
+        it("should read image.yaml from supplied directory", async function () {
             const directory = "./image-1";
 
             getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
-            return sut.loadImage(directory).then(() => {
-                readYaml.should.have.been.calledWith(path.join(directory, "image.yaml"));
-            });
+            await sut.loadImage(directory);
+
+            readYaml.should.have.been.calledWith(path.join(directory, "image.yaml"));
         });
 
-        it("should return parsed image.yaml", function () {
+        it("should return parsed image.yaml", async function () {
             const image = { name: "Image 1" };
 
             getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve(_.clone(image)));
 
-            return sut.loadImage("").then(result => {
-                _.each(image, (value, key) => result.should.have.property(key, value));
-            });
+            const result = await sut.loadImage("");
+
+            _.each(image, (value, key) => result.should.have.property(key, value));
         });
 
-        it("should extend parsed image.yaml with id", function () {
+        it("should extend parsed image.yaml with id", async function () {
             const directory = "./image-1";
 
             getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
-            return sut.loadImage(directory).then(result => {
-                result.should.have.property("id", path.basename(directory));
-            });
+            const result = await sut.loadImage(directory);
+
+            result.should.have.property("id", path.basename(directory));
         });
 
-        it("should overwrite existing id property from image.yaml if there is one", function () {
+        it("should overwrite existing id property from image.yaml if there is one", async function () {
             const directory = "./image-1";
 
             getExtensions.returns([ ".jpg" ]);
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({ id: "Original Value"}));
 
-            return sut.loadImage(directory).then(result => {
-                result.should.have.property("id", path.basename(directory));
-            });
+            const result = await sut.loadImage(directory);
+
+            result.should.have.property("id", path.basename(directory));
         });
 
-        it("should extend parsed image.yaml with path property", function () {
+        it("should extend parsed image.yaml with path property", async function () {
             const directory = "./image-1";
             const extensions = [ ".jpg" ];
             const imagePath = path.join(directory, "image" + extensions[0]);
@@ -134,12 +134,12 @@ describe("content/image.js", function() {
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
-            return sut.loadImage(directory).then(result => {
-                result.should.have.property("path", imagePath);
-            });
+            const result = await sut.loadImage(directory);
+
+            result.should.have.property("path", imagePath);
         });
 
-        it("should overwrite existing path property from image.yaml if there is one", function () {
+        it("should overwrite existing path property from image.yaml if there is one", async function () {
             const directory = "./image-1";
             const extensions = [ ".jpg" ];
             const imagePath = path.join(directory, "image" + extensions[0]);
@@ -148,12 +148,12 @@ describe("content/image.js", function() {
             statAsync.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({ path: "Original Value"}));
 
-            return sut.loadImage(directory).then(result => {
-                result.should.have.property("path", imagePath);
-            });
+            const result = await sut.loadImage(directory);
+
+            result.should.have.property("path", imagePath);
         });
 
-        it("should parse exif from image file", function () {
+        it("should parse exif from image file", async function () {
             const directory = "./image-1";
             const extensions = [ ".jpg" ];
             const imagePath = path.join(directory, "image" + extensions[0]);
@@ -163,12 +163,12 @@ describe("content/image.js", function() {
             readYaml.returns(Promise.resolve({}));
             readExif.returns("");
 
-            return sut.loadImage(directory).then(() => {
-                readExif.should.have.been.calledWith(imagePath);
-            });
+            await sut.loadImage(directory);
+
+            readExif.should.have.been.calledWith(imagePath);
         });
 
-        it("should extend parsed image.yaml with exif", function () {
+        it("should extend parsed image.yaml with exif", async function () {
             const directory = "./image-1";
             const exif = "exif";
 
@@ -177,12 +177,12 @@ describe("content/image.js", function() {
             readYaml.returns(Promise.resolve({}));
             readExif.returns(exif);
 
-            return sut.loadImage(directory).then(result => {
-                result.should.have.property("exif", exif);
-            });
+            const result = await sut.loadImage(directory);
+
+            result.should.have.property("exif", exif);
         });
 
-        it("should overwrite existing exif property from image.yaml if there is one", function () {
+        it("should overwrite existing exif property from image.yaml if there is one", async function () {
             const exif = "exif";
 
             getExtensions.returns([ ".jpg" ]);
@@ -190,9 +190,9 @@ describe("content/image.js", function() {
             readYaml.returns(Promise.resolve({ exif: "Original Value"}));
             readExif.returns(exif);
 
-            return sut.loadImage("").then(result => {
-                result.should.have.property("exif", exif);
-            });
+            const result = await sut.loadImage("");
+
+            result.should.have.property("exif", exif);
         });
     });
 });

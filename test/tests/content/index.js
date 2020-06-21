@@ -34,47 +34,47 @@ describe("content/index.js", function() {
     });
 
     describe("loadContent()", function () {
-        it("should read site.yaml from configured content directory", function () {
+        it("should read site.yaml from configured content directory", async function () {
             const contentDirectory = "./content";
 
             getConfig.withArgs("contentDirectory").returns(contentDirectory);
             readYaml.returns(Promise.resolve({}));
 
-            return sut.loadContent().then(() => {
-                readYaml.should.have.been.calledWith(path.join(contentDirectory, "site.yaml"));
-            });
+            await sut.loadContent();
+
+            readYaml.should.have.been.calledWith(path.join(contentDirectory, "site.yaml"));
         });
 
-        it("should return parsed site.yaml", function () {
+        it("should return parsed site.yaml", async function () {
             const site = { name: "Site" };
 
             readYaml.returns(Promise.resolve(_.clone(site)));
 
-            return sut.loadContent().then(result => {
-                _.each(site, (value, key) => result.should.have.property(key, value));
-            });
+            const result = await sut.loadContent();
+
+            _.each(site, (value, key) => result.should.have.property(key, value));
         });
 
-        it("should extend parsed site.yaml with albums", function () {
+        it("should extend parsed site.yaml with albums", async function () {
             const albums = [{ id: "album1" }, { id: "album2" }];
 
             readYaml.returns(Promise.resolve({}));
             loadAlbums.returns(Promise.resolve(albums));
 
-            return sut.loadContent().then(result => {
-                result.should.have.property("albums", albums);
-            });
+            const result = await sut.loadContent();
+
+            result.should.have.property("albums", albums);
         });
 
-        it("should overwrite existing albums property from site.yaml if there is one", function () {
+        it("should overwrite existing albums property from site.yaml if there is one", async function () {
             const albums = [{ id: "album1" }, { id: "album2" }];
 
             readYaml.returns(Promise.resolve({ albums: "Original Value" }));
             loadAlbums.returns(Promise.resolve(albums));
 
-            return sut.loadContent().then(result => {
-                result.should.have.property("albums", albums);
-            });
+            const result = await sut.loadContent();
+
+            result.should.have.property("albums", albums);
         });
     });
 });

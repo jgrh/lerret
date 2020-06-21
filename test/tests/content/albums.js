@@ -36,29 +36,29 @@ describe("content/albums.js", function() {
     });
 
     describe("loadAlbums()", function () {
-        it("should list subdirectories within content directory", function () {
+        it("should list subdirectories within content directory", async function () {
             const contentDirectory = "./content";
 
             getConfig.withArgs("contentDirectory").returns(contentDirectory);
             listSubdirectories.returns(Promise.resolve([]));
 
-            return sut.loadAlbums().then(() => {
-                listSubdirectories.should.have.been.calledWith(contentDirectory);
-            });
+            await sut.loadAlbums();
+
+            listSubdirectories.should.have.been.calledWith(contentDirectory);
         });
 
-        it("should log an info message with found albums", function () {
+        it("should log an info message with found albums", async function () {
             const directory1 = "./path/to/a";
             const directory2 = "./path/to/b";
 
             listSubdirectories.returns(Promise.resolve([directory1, directory2]));
 
-            return sut.loadAlbums().then(() => {
-                logInfo.should.have.been.calledWith("Found albums %s", [path.basename(directory1), path.basename(directory2)].join(", "));
-            });
+            await sut.loadAlbums();
+
+            logInfo.should.have.been.calledWith("Found albums %s", [path.basename(directory1), path.basename(directory2)].join(", "));
         });
 
-        it("should load album from each subdirectory and returns them as an array", function () {
+        it("should load album from each subdirectory and returns them as an array", async function () {
             const directory1 = "./a";
             const directory2 = "./b";
             const album1 = { id: "album1" };
@@ -68,14 +68,14 @@ describe("content/albums.js", function() {
             loadAlbum.withArgs(directory1).returns(album1);
             loadAlbum.withArgs(directory2).returns(album2);
 
-            return sut.loadAlbums().then(result => {
-                result.length.should.equal(2);
-                _.each(album1, (value, key) => result[0].should.have.property(key, value));
-                _.each(album2, (value, key) => result[1].should.have.property(key, value));
-            });
+            const result = await sut.loadAlbums();
+
+            result.length.should.equal(2);
+            _.each(album1, (value, key) => result[0].should.have.property(key, value));
+            _.each(album2, (value, key) => result[1].should.have.property(key, value));
         });
 
-        it("should sort albums by single property and order", function () {
+        it("should sort albums by single property and order", async function () {
             const album1 = { id: "album1", order: 2 };
             const album2 = { id: "album2", order: 1 };
             const album3 = { id: "album3", order: 3 };
@@ -91,14 +91,14 @@ describe("content/albums.js", function() {
             getConfig.withArgs("sort.albums.property").returns(sortBy);
             getConfig.withArgs("sort.albums.order", "asc").returns(sortOrder);
 
-            return sut.loadAlbums().then(result => {
-                result[0].should.have.property("id", album3.id);
-                result[1].should.have.property("id", album1.id);
-                result[2].should.have.property("id", album2.id);
-            });
+            const result = await sut.loadAlbums();
+
+            result[0].should.have.property("id", album3.id);
+            result[1].should.have.property("id", album1.id);
+            result[2].should.have.property("id", album2.id);
         });
 
-        it("should sort albums by multiple properties and orders", function () {
+        it("should sort albums by multiple properties and orders", async function () {
             const album1 = { id: "album1", firstOrder: 1, secondOrder: 1 };
             const album2 = { id: "album2", firstOrder: 2, secondOrder: 1 };
             const album3 = { id: "album3", firstOrder: 1, secondOrder: 2 };
@@ -116,12 +116,12 @@ describe("content/albums.js", function() {
             getConfig.withArgs("sort.albums.property").returns(sortBy);
             getConfig.withArgs("sort.albums.order", "asc").returns(sortOrder);
 
-            return sut.loadAlbums().then(result => {
-                result[0].should.have.property("id", album3.id);
-                result[1].should.have.property("id", album1.id);
-                result[2].should.have.property("id", album4.id);
-                result[3].should.have.property("id", album2.id);
-            });
+            const result = await sut.loadAlbums();
+
+            result[0].should.have.property("id", album3.id);
+            result[1].should.have.property("id", album1.id);
+            result[2].should.have.property("id", album4.id);
+            result[3].should.have.property("id", album2.id);
         });
     });
 });

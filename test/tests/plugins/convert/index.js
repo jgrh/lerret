@@ -65,7 +65,7 @@ describe("plugins/convert/index.js", function() {
     });
 
     describe("processImage(image, index, length, album)", function () {
-        it("should log a verbose message", function () {
+        it("should log a verbose message", async function () {
             const album = { id: "album" };
             const filename = "output.jpg";
             const image = { id: "image" };
@@ -75,12 +75,12 @@ describe("plugins/convert/index.js", function() {
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                logVerbose.should.have.been.calledWith("Converting image %s/%s to %s", album.id, image.id, filename);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            logVerbose.should.have.been.calledWith("Converting image %s/%s to %s", album.id, image.id, filename);
         });
 
-        it("should pass image path to gm", function () {
+        it("should pass image path to gm", async function () {
             const image = { path: "./image.jpg" };
 
             getConfig.withArgs("convert").returns([{}]);
@@ -88,12 +88,12 @@ describe("plugins/convert/index.js", function() {
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, {}).then(() => {
-                gm.should.have.been.calledWith(image.path);
-            });
+            await sut.processImage(image, 0, 0, {});
+
+            gm.should.have.been.calledWith(image.path);
         });
 
-        it("should apply resize if configured", function () {
+        it("should apply resize if configured", async function () {
             const album = { id: "album" };
             const image = { id: "image" };
             const input = "input";
@@ -105,12 +105,12 @@ describe("plugins/convert/index.js", function() {
             applyResize.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                applyResize.should.have.been.calledWith("convert[0].", input);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            applyResize.should.have.been.calledWith("convert[0].", input);
         });
 
-        it("should apply unsharp if configured", function () {
+        it("should apply unsharp if configured", async function () {
             const album = { id: "album" };
             const image = { id: "image" };
             const input = "input";
@@ -122,12 +122,12 @@ describe("plugins/convert/index.js", function() {
             applyUnsharp.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                applyUnsharp.should.have.been.calledWith("convert[0].", input);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            applyUnsharp.should.have.been.calledWith("convert[0].", input);
         });
 
-        it("should apply quality if configured", function () {
+        it("should apply quality if configured", async function () {
             const album = { id: "album" };
             const image = { id: "image" };
             const input = "input";
@@ -139,12 +139,12 @@ describe("plugins/convert/index.js", function() {
             applyQuality.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                applyQuality.should.have.been.calledWith("convert[0].", input);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            applyQuality.should.have.been.calledWith("convert[0].", input);
         });
 
-        it("should apply resize, unsharp and quality in sequence", function () {
+        it("should apply resize, unsharp and quality in sequence", async function () {
             const album = { id: "album" };
             const image = { id: "image" };
             const input = "input";
@@ -162,14 +162,14 @@ describe("plugins/convert/index.js", function() {
             applyQuality.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                applyResize.should.have.been.calledWith(sinon.match.any, input);
-                applyUnsharp.should.have.been.calledWith(sinon.match.any, resizeOutput);
-                applyQuality.should.have.been.calledWith(sinon.match.any, unsharpOutput);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            applyResize.should.have.been.calledWith(sinon.match.any, input);
+            applyUnsharp.should.have.been.calledWith(sinon.match.any, resizeOutput);
+            applyQuality.should.have.been.calledWith(sinon.match.any, unsharpOutput);
         });
 
-        it("should create file output stream to configured filename", function () {
+        it("should create file output stream to configured filename", async function () {
             const album = { id: "album" };
             const filename = "output.jpg";
             const image = { id: "image" };
@@ -179,12 +179,12 @@ describe("plugins/convert/index.js", function() {
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                createImageFileStream.should.have.been.calledWith(album, image, filename);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            createImageFileStream.should.have.been.calledWith(album, image, filename);
         });
 
-        it("should get target file format based upon the extension of the configured filename", function () {
+        it("should get target file format based upon the extension of the configured filename", async function () {
             const album = { id: "album" };
             const filename = "output.jpg";
             const image = { id: "image" };
@@ -194,12 +194,12 @@ describe("plugins/convert/index.js", function() {
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                getFormat.should.have.been.calledWith(path.extname(filename));
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            getFormat.should.have.been.calledWith(path.extname(filename));
         });
 
-        it("should stream resized image in the target file format", function () {
+        it("should stream resized image in the target file format", async function () {
             const album = { id: "album" };
             const filename = "output.jpg";
             const format = "jpeg";
@@ -211,12 +211,12 @@ describe("plugins/convert/index.js", function() {
             getFormat.returns(format);
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                streamAsync.should.have.been.calledWith(format);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            streamAsync.should.have.been.calledWith(format);
         });
 
-        it("should pipe gm output to file output stream", function () {
+        it("should pipe gm output to file output stream", async function () {
             const album = { id: "album" };
             const image = { id: "image" };
             const stream = "stream";
@@ -227,12 +227,12 @@ describe("plugins/convert/index.js", function() {
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
             createImageFileStream.returns(stream);
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                pipe.should.have.been.calledWith(stream);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            pipe.should.have.been.calledWith(stream);
         });
 
-        it("should not return anything", function () {
+        it("should not return anything", async function () {
             const image = { id: "image" };
 
             getConfig.withArgs("convert").returns([{}]);
@@ -240,12 +240,12 @@ describe("plugins/convert/index.js", function() {
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, {}).then(result => {
-                assert(result === undefined);
-            });
+            const result = await sut.processImage(image, 0, 0, {});
+
+            assert(result === undefined);
         });
 
-        it("should convert image for each config entry", function () {
+        it("should convert image for each config entry", async function () {
             const config = [{}, {}];
             const image = { id: "image" };
 
@@ -255,10 +255,10 @@ describe("plugins/convert/index.js", function() {
             gm.returns({ streamAsync: streamAsync });
             streamAsync.returns(Promise.resolve({ pipe: pipe }));
 
-            return sut.processImage(image, 0, 0, {}).then(() => {
-                streamAsync.should.have.callCount(config.length);
-                createImageFileStream.should.have.callCount(config.length);
-            });
+            await sut.processImage(image, 0, 0, {});
+
+            streamAsync.should.have.callCount(config.length);
+            createImageFileStream.should.have.callCount(config.length);
         });
     });
 });

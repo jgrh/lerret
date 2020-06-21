@@ -34,16 +34,16 @@ describe("content/helpers.js", function() {
     });
 
     describe("listSubdirectories(directory)", function() {
-        it("should return list of directories", function () {
+        it("should return list of directories", async function () {
             const directory = "./";
             const subdirectories = ["a", "b", "c"];
 
             readDirAsync.withArgs(directory).returns(Promise.resolve(subdirectories));
             statAsync.returns(Promise.resolve({ isDirectory: () => true }));
 
-            return sut.listSubdirectories(directory).then(result => {
-                result.length.should.equal(subdirectories.length);
-            });
+            const result = await sut.listSubdirectories(directory);
+
+            result.length.should.equal(subdirectories.length);
         });
 
         it("should throw a LerretError if directory cannot be read", function () {
@@ -55,70 +55,70 @@ describe("content/helpers.js", function() {
             return sut.listSubdirectories(directory).should.be.rejectedWith(LerretError, util.format("Error reading directory %s; %s", directory, error.message));
         });
 
-        it("should prefix subdirectory name with parent directory name", function () {
+        it("should prefix subdirectory name with parent directory name", async function () {
             const directory = "./";
             const subdirectory = "a";
 
             readDirAsync.returns(Promise.resolve(["a"]));
             statAsync.returns(Promise.resolve({ isDirectory: () => true }));
 
-            return sut.listSubdirectories(directory).then(result => {
-                result[0].should.equal(path.join(directory, subdirectory));
-            });
+            const result = await sut.listSubdirectories(directory);
+
+            result[0].should.equal(path.join(directory, subdirectory));
         });
 
-        it("should not return hidden subdirectories", function () {
+        it("should not return hidden subdirectories", async function () {
             readDirAsync.returns(Promise.resolve([".a"]));
             statAsync.returns(Promise.resolve({ isDirectory: () => true }));
 
-            return sut.listSubdirectories("").then(result => {
-                result.length.should.equal(0);
-            });
+            const result = await sut.listSubdirectories("");
+
+            result.length.should.equal(0);
         });
 
-        it("should not return subdirectory on EACCES error", function () {
+        it("should not return subdirectory on EACCES error", async function () {
             const error = new Error();
             error.code = "EACCES";
 
             readDirAsync.returns(Promise.resolve(["a"]));
             statAsync.returns(Promise.resolve().throw(error));
 
-            return sut.listSubdirectories("").then(result => {
-                result.length.should.equal(0);
-            });
+            const result = await sut.listSubdirectories("");
+
+            result.length.should.equal(0);
         });
 
-        it("should not return subdirectory on EPERM error", function () {
+        it("should not return subdirectory on EPERM error", async function () {
             const error = new Error();
             error.code = "EPERM";
 
             readDirAsync.returns(Promise.resolve(["a"]));
             statAsync.returns(Promise.resolve().throw(error));
 
-            return sut.listSubdirectories("").then(result => {
-                result.length.should.equal(0);
-            });
+            const result = await sut.listSubdirectories("");
+
+            result.length.should.equal(0);
         });
 
-        it("should not return files", function () {
+        it("should not return files", async function () {
             readDirAsync.returns(Promise.resolve(["a"]));
             statAsync.returns(Promise.resolve({ isDirectory: () => false }));
 
-            return sut.listSubdirectories("").then(result => {
-                result.length.should.equal(0);
-            });
+            const result = await sut.listSubdirectories("");
+
+            result.length.should.equal(0);
         });
     });
 
     describe("readYaml(filename)", function() {
-        it("should read supplied filename", function () {
+        it("should read supplied filename", async function () {
             const filename = "./path/to/file";
 
             readFileAsync.returns(Promise.resolve());
 
-            return sut.readYaml(filename).then(() => {
-                readFileAsync.should.be.calledWith(filename);
-            });
+            await sut.readYaml(filename);
+
+            readFileAsync.should.be.calledWith(filename);
         });
 
         it("should throw a LerretError if file cannot be read", function () {
@@ -130,14 +130,14 @@ describe("content/helpers.js", function() {
             return sut.readYaml(filename).should.be.rejectedWith(LerretError, util.format("Error reading YAML file %s; %s", filename, error.message));
         });
 
-        it("should load yaml from file", function () {
+        it("should load yaml from file", async function () {
             const file = "file";
 
             readFileAsync.returns(Promise.resolve(file));
 
-            return sut.readYaml("").then(() => {
-                safeLoad.should.be.calledWith(file);
-            });
+            await sut.readYaml("");
+
+            safeLoad.should.be.calledWith(file);
         });
 
         it("should throw a LerretError if file cannot be parsed", function () {
@@ -150,35 +150,35 @@ describe("content/helpers.js", function() {
             return sut.readYaml(filename).should.be.rejectedWith(LerretError, util.format("Error reading YAML file %s; %s", filename, error.message));
         });
 
-        it("should return yaml", function () {
+        it("should return yaml", async function () {
             const yaml = { key: "value" };
 
             readFileAsync.returns(Promise.resolve());
             safeLoad.returns(yaml);
 
-            return sut.readYaml("").then(result => {
-                result.should.eql(yaml);
-            });
+            const result = await sut.readYaml("");
+
+            result.should.eql(yaml);
         });
 
-        it("should return empty object if yaml is null", function () {
+        it("should return empty object if yaml is null", async function () {
             readFileAsync.returns(Promise.resolve());
             safeLoad.returns(null);
 
-            return sut.readYaml("").then(result => {
-                result.should.be.empty;
-            });
+            const result = await sut.readYaml("");
+
+            result.should.be.empty;
         });
 
-        it("should return empty object if file not found", function () {
+        it("should return empty object if file not found", async function () {
             const error = new Error();
             error.code = "ENOENT";
 
             readFileAsync.returns(Promise.resolve().throw(error));
 
-            return sut.readYaml("").then(result => {
-                result.should.be.empty;
-            });
+            const result = await sut.readYaml("");
+
+            result.should.be.empty;
         });
     });
 });

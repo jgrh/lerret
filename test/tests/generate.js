@@ -34,79 +34,79 @@ describe("generate.js", function() {
     });
 
     describe("generate()", function () {
-        it("should initilise plugins", function () {
+        it("should initilise plugins", async function () {
             initPlugins.returns(Promise.resolve());
 
-            return sut.generate().then(() => {
-                initPlugins.should.have.been.called;
-            });
+            await sut.generate();
+
+            initPlugins.should.have.been.called;
         });
 
-        it("should log an error if initPlugins throws a LerretError", function () {
+        it("should log an error if initPlugins throws a LerretError", async function () {
             const error = new LerretError("error");
 
             initPlugins.returns(Promise.resolve().throw(error));
 
-            return sut.generate().then(() => {
-                logError.should.have.been.calledWith(error.message);
-            });
+            await sut.generate();
+
+            logError.should.have.been.calledWith(error.message);
         });
 
-        it("should load content", function () {
+        it("should load content", async function () {
             initPlugins.returns(Promise.resolve());
 
-            return sut.generate().then(() => {
-                loadContent.should.have.been.called;
-            });
+            await sut.generate();
+
+            loadContent.should.have.been.called;
         });
 
-        it("should log an error if loadContent throws a LerretError", function () {
+        it("should log an error if loadContent throws a LerretError", async function () {
             const error = new LerretError("error");
 
             initPlugins.returns(Promise.resolve());
             loadContent.returns(Promise.resolve().throw(error));
 
-            return sut.generate().then(() => {
-                logError.should.have.been.calledWith(error.message);
-            });
+            await sut.generate();
+
+            logError.should.have.been.calledWith(error.message);
         });
 
-        it("should run plugins on content", function () {
+        it("should run plugins on content", async function () {
             const loaded = "content";
 
             initPlugins.returns(Promise.resolve());
             loadContent.returns(Promise.resolve(loaded));
 
-            return sut.generate().then(() => {
-                callPlugins.should.have.been.calledWith(loaded);
-            });
+            await sut.generate();
+
+            callPlugins.should.have.been.calledWith(loaded);
         });
 
-        it("should initilise plugins before running them", function () {
+        it("should initilise plugins before running them", async function () {
             initPlugins.returns(Promise.resolve());
 
-            return sut.generate().then(() => {
-                sinon.assert.callOrder(initPlugins, callPlugins);
-            });
+            await sut.generate();
+
+            sinon.assert.callOrder(initPlugins, callPlugins);
         });
 
-        it("should log an error if callPlugins throws a LerretError", function () {
+        it("should log an error if callPlugins throws a LerretError", async function () {
             const error = new LerretError("error");
 
             initPlugins.returns(Promise.resolve());
             callPlugins.returns(Promise.resolve().throw(error));
 
-            return sut.generate().then(() => {
-                logError.should.have.been.calledWith(error.message);
-            });
+            await sut.generate();
+
+            logError.should.have.been.calledWith(error.message);
         });
 
-        it("should log an info message on success", function () {
+        it("should log an info message on success", async function () {
             initPlugins.returns(Promise.resolve());
 
-            return sut.generate().then(() => {
-                logInfo.should.have.been.calledWith("All done :)");
-            });
+            await sut.generate();
+
+            logInfo.should.have.been.calledWith("All done :)");
         });
     });
 });

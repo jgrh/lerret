@@ -46,49 +46,49 @@ describe("plugins/copy.js", function() {
     });
 
     describe("processImage(image, index, length, album)", function () {
-        it("should log a verbose message", function () {
+        it("should log a verbose message", async function () {
             const album = { id: "album" };
             const image = { id: "image", path: "./path/to/image.jpg" };
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                logVerbose.should.have.been.calledWith("Copying image %s/%s", album.id, image.id);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            logVerbose.should.have.been.calledWith("Copying image %s/%s", album.id, image.id);
         });
 
-        it("should create an output stream to the configured filename, defaulting to the current filename", function () {
+        it("should create an output stream to the configured filename, defaulting to the current filename", async function () {
             const album = { id: "album" };
             const image = { id: "image", path: "./path/to/image.jpg" };
             const filename = "image.jpg";
 
             getConfig.withArgs("copy.filename", path.basename(image.path)).returns(filename);
 
-            return sut.processImage(image, 0, 0, album).then(() => {
-                createImageFileStream.should.have.been.calledWith(album, image, filename);
-            });
+            await sut.processImage(image, 0, 0, album);
+
+            createImageFileStream.should.have.been.calledWith(album, image, filename);
         });
 
-        it("should create an input stream from the image's filename", function () {
+        it("should create an input stream from the image's filename", async function () {
             const image = { path: "./path/to/image.jpg" };
 
-            return sut.processImage(image, 0, 0, {}).then(() => {
-                createReadStream.should.have.been.calledWith(image.filename);
-            });
+            await sut.processImage(image, 0, 0, {});
+
+            createReadStream.should.have.been.calledWith(image.filename);
         });
 
-        it("should pipe the input stream to the output stream", function () {
+        it("should pipe the input stream to the output stream", async function () {
             const stream = "stream";
 
             createImageFileStream.returns(Promise.resolve(stream));
 
-            return sut.processImage({ path: "./path/to/image.jpg" }, 0, 0, {}).then(() => {
-                pipe.should.have.been.calledWith(stream);
-            });
+            await sut.processImage({ path: "./path/to/image.jpg" }, 0, 0, {});
+
+            pipe.should.have.been.calledWith(stream);
         });
 
-        it("should not return anything", function () {
-            return sut.processImage({ path: "./path/to/image" }, 0, 0, {}).then(result => {
-                assert(result === undefined);
-            });
+        it("should not return anything", async function () {
+            const result = await sut.processImage({ path: "./path/to/image" }, 0, 0, {});
+
+            assert(result === undefined);
         });
     });
 });

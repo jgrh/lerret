@@ -82,7 +82,7 @@ describe("plugins/plugins.js", function() {
     });
 
     describe("getPluginSequence(name)(content)", function () {
-        it("should call processSite with content and config", function () {
+        it("should call processSite with content and config", async function () {
             const content = { name: "site" };
             const plugin = {
                 name: "plugin",
@@ -91,12 +91,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                plugin.processSite.should.have.been.calledWith(content, config);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            plugin.processSite.should.have.been.calledWith(content, config);
         });
 
-        it("should call processAlbum with album, index, length, content and config for each album", function () {
+        it("should call processAlbum with album, index, length, content and config for each album", async function () {
             const content = {
                 name: "site",
                 albums: [{ id: "album1" }, { id: "album2" }, { id: "album3" }]
@@ -108,14 +108,14 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                plugin.processAlbum.should.have.been.calledWith(content.albums[0], 0, 3, content, config);
-                plugin.processAlbum.should.have.been.calledWith(content.albums[1], 1, 3, content, config);
-                plugin.processAlbum.should.have.been.calledWith(content.albums[2], 2, 3, content, config);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            plugin.processAlbum.should.have.been.calledWith(content.albums[0], 0, 3, content, config);
+            plugin.processAlbum.should.have.been.calledWith(content.albums[1], 1, 3, content, config);
+            plugin.processAlbum.should.have.been.calledWith(content.albums[2], 2, 3, content, config);
         });
 
-        it("should call processImage with image, index, length, album, content and config for each image", function () {
+        it("should call processImage with image, index, length, album, content and config for each image", async function () {
             const content = {
                 name: "site",
                 albums: [
@@ -130,17 +130,17 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                plugin.processImage.should.have.been.calledWith(content.albums[0].images[0], 0, 3, content.albums[0], content, config);
-                plugin.processImage.should.have.been.calledWith(content.albums[0].images[1], 1, 3, content.albums[0], content, config);
-                plugin.processImage.should.have.been.calledWith(content.albums[0].images[2], 2, 3, content.albums[0], content, config);
-                plugin.processImage.should.have.been.calledWith(content.albums[1].images[0], 0, 3, content.albums[1], content, config);
-                plugin.processImage.should.have.been.calledWith(content.albums[1].images[1], 1, 3, content.albums[1], content, config);
-                plugin.processImage.should.have.been.calledWith(content.albums[1].images[2], 2, 3, content.albums[1], content, config);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            plugin.processImage.should.have.been.calledWith(content.albums[0].images[0], 0, 3, content.albums[0], content, config);
+            plugin.processImage.should.have.been.calledWith(content.albums[0].images[1], 1, 3, content.albums[0], content, config);
+            plugin.processImage.should.have.been.calledWith(content.albums[0].images[2], 2, 3, content.albums[0], content, config);
+            plugin.processImage.should.have.been.calledWith(content.albums[1].images[0], 0, 3, content.albums[1], content, config);
+            plugin.processImage.should.have.been.calledWith(content.albums[1].images[1], 1, 3, content.albums[1], content, config);
+            plugin.processImage.should.have.been.calledWith(content.albums[1].images[2], 2, 3, content.albums[1], content, config);
         });
 
-        it("should call processSite, processAlbum and processImage are all called when used together", function () {
+        it("should call processSite, processAlbum and processImage are all called when used together", async function () {
             const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
             const plugin = {
                 name: "plugin",
@@ -151,14 +151,14 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                plugin.processSite.should.have.been.called;
-                plugin.processAlbum.should.have.been.called;
-                plugin.processImage.should.have.been.called;
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            plugin.processSite.should.have.been.called;
+            plugin.processAlbum.should.have.been.called;
+            plugin.processImage.should.have.been.called;
         });
 
-        it("should call plugins in sequence", function () {
+        it("should call plugins in sequence", async function () {
             const content = { name: "site" };
             const pluginA = {
                 name: "pluginA",
@@ -177,12 +177,12 @@ describe("plugins/plugins.js", function() {
             sut.installPlugin(pluginB);
             sut.installPlugin(pluginC);
 
-            return sut.getPluginSequence([pluginB.name, pluginA.name, pluginC.name])(content).then(() => {
-                sinon.assert.callOrder(pluginB.processSite, pluginA.processSite, pluginC.processSite);
-            });
+            await sut.getPluginSequence([pluginB.name, pluginA.name, pluginC.name])(content);
+
+            sinon.assert.callOrder(pluginB.processSite, pluginA.processSite, pluginC.processSite);
         });
 
-        it("should call plugin with the content returned by the previous plugin", function () {
+        it("should call plugin with the content returned by the previous plugin", async function () {
             const content = { name: "site" };
             const contentNew = { name: "new site" };
             const pluginA = {
@@ -199,12 +199,12 @@ describe("plugins/plugins.js", function() {
             sut.installPlugin(pluginA);
             sut.installPlugin(pluginB);
 
-            return sut.getPluginSequence([pluginA.name, pluginB.name])(content).then(() => {
-                pluginB.processSite.should.have.been.calledWith(contentNew);
-            });
+            await sut.getPluginSequence([pluginA.name, pluginB.name])(content);
+
+            pluginB.processSite.should.have.been.calledWith(contentNew);
         });
 
-        it("should update content with the value returned by processSite", function () {
+        it("should update content with the value returned by processSite", async function () {
             const content = { name: "site" };
             const contentNew = { name: "new site" };
             const plugin = {
@@ -216,12 +216,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(result => {
-                result.should.eql(contentNew);
-            });
+            const result = await sut.getPluginSequence([plugin.name])(content);
+
+            result.should.eql(contentNew);
         });
 
-        it("should update content with the value returned by processAlbum", function () {
+        it("should update content with the value returned by processAlbum", async function () {
             const content = {
                 name: "site",
                 albums: [{ id: "album1" }, { id: "album2" }, { id: "album3" }]
@@ -239,12 +239,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(result => {
-                result.should.eql(contentNew);
-            });
+            const result = await sut.getPluginSequence([plugin.name])(content);
+
+            result.should.eql(contentNew);
         });
 
-        it("should update content with the value returned by processImage", function () {
+        it("should update content with the value returned by processImage", async function () {
             const content = {
                 name: "site",
                 albums: [{ id: "album1", images: [{ id: "image1" }, { id: "image2" }, { id: "image3" }] }]
@@ -262,12 +262,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(result => {
-                result.should.eql(contentNew);
-            });
+            const result = await sut.getPluginSequence([plugin.name])(content);
+
+            result.should.eql(contentNew);
         });
 
-        it("processSite's content argument should be effectively immutable", function () {
+        it("processSite's content argument should be effectively immutable", async function () {
             const content = { name: "site" };
             const contentClone = _.clone(content);
             const plugin = {
@@ -279,12 +279,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                content.should.eql(contentClone);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            content.should.eql(contentClone);
         });
 
-        it("processAlbum's album argument should be effectively immutable", function () {
+        it("processAlbum's album argument should be effectively immutable", async function () {
             const content = {
                 name: "site",
                 albums: [{ id: "album1" }, { id: "album2" }, { id: "album3" }]
@@ -299,12 +299,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                content.should.eql(contentClone);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            content.should.eql(contentClone);
         });
 
-        it("processImage's album argument should be effectively immutable", function () {
+        it("processImage's album argument should be effectively immutable", async function () {
             const content = {
                 name: "site",
                 albums: [{ id: "album1", images: [{ id: "image1" }, { id: "image2" }, { id: "image3" }] }]
@@ -319,12 +319,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                content.should.eql(contentClone);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            content.should.eql(contentClone);
         });
 
-        it("processImage's image argument should be effectively immutable", function () {
+        it("processImage's image argument should be effectively immutable", async function () {
             const content = {
                 name: "site",
                 albums: [{ id: "album1", images: [{ id: "image1" }, { id: "image2" }, { id: "image3" }] }]
@@ -339,12 +339,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                content.should.eql(contentClone);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            content.should.eql(contentClone);
         });
 
-        it("should log an info message when calling a plugin", function () {
+        it("should log an info message when calling a plugin", async function () {
             const content = { name: "site" };
             const plugin = {
                 name: "plugin",
@@ -353,12 +353,12 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                logInfo.should.have.been.calledWith("Calling plugin %s", plugin.name);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            logInfo.should.have.been.calledWith("Calling plugin %s", plugin.name);
         });
 
-        it("should log an info message when calling a plugin finishes", function () {
+        it("should log an info message when calling a plugin finishes", async function () {
             const content = { name: "site" };
             const plugin = {
                 name: "plugin",
@@ -370,14 +370,14 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                timeStamp.should.have.been.calledWith("start");
-                timeSince.should.have.been.calledWith("start");
-                logInfo.should.have.been.calledWith("Plugin %s finished in %s", plugin.name, duration);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            timeStamp.should.have.been.calledWith("start");
+            timeSince.should.have.been.calledWith("start");
+            logInfo.should.have.been.calledWith("Plugin %s finished in %s", plugin.name, duration);
         });
 
-        it("should begin timing a plugin before calling processSite, processAlbum and processImage", function () {
+        it("should begin timing a plugin before calling processSite, processAlbum and processImage", async function () {
             const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
             const plugin = {
                 name: "plugin",
@@ -388,14 +388,14 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                sinon.assert.callOrder(timeStamp, plugin.processSite);
-                sinon.assert.callOrder(timeStamp, plugin.processAlbum);
-                sinon.assert.callOrder(timeStamp, plugin.processImage);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            sinon.assert.callOrder(timeStamp, plugin.processSite);
+            sinon.assert.callOrder(timeStamp, plugin.processAlbum);
+            sinon.assert.callOrder(timeStamp, plugin.processImage);
         });
 
-        it("should stop timing a plugin after calling processSite, processAlbum and processImage", function () {
+        it("should stop timing a plugin after calling processSite, processAlbum and processImage", async function () {
             const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
             const plugin = {
                 name: "plugin",
@@ -406,11 +406,11 @@ describe("plugins/plugins.js", function() {
 
             sut.installPlugin(plugin);
 
-            return sut.getPluginSequence([plugin.name])(content).then(() => {
-                sinon.assert.callOrder(plugin.processSite, timeSince);
-                sinon.assert.callOrder(plugin.processAlbum, timeSince);
-                sinon.assert.callOrder(plugin.processImage, timeSince);
-            });
+            await sut.getPluginSequence([plugin.name])(content);
+
+            sinon.assert.callOrder(plugin.processSite, timeSince);
+            sinon.assert.callOrder(plugin.processAlbum, timeSince);
+            sinon.assert.callOrder(plugin.processImage, timeSince);
         });
 
         it("should throw a LerretError if a plugin is not found", function () {
