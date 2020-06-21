@@ -1,0 +1,2 @@
+recursive: true
+file: test/setup.js

@@ -40,13 +40,13 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "coveralls": "^3.0.2",
-    "eslint": "^5.13.0",
+    "coveralls": "^3.1.0",
+    "eslint": "^7.3.0",
     "istanbul": "^0.4.5",
     "istanbul-coveralls": "^1.0.3",
-    "mocha": "^5.2.0",
-    "rewire": "^4.0.1",
-    "sinon": "^7.2.3",
-    "sinon-chai": "^3.3.0"
+    "mocha": "^8.0.1",
+    "rewire": "^5.0.0",
+    "sinon": "^9.0.2",
+    "sinon-chai": "^3.5.0"
   }
 }
