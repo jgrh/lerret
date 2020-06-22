@@ -16,7 +16,7 @@ Lerret supports GIF, JPEG, PNG and TIFF image formats. Lerret will also extract 
 ### 2.0.0
 
 * Support for Node versions 11 and earlier dropped.
-* Upgraded to pug 3. See [Migrating to Pug 3](https://pugjs.org/api/migration-v3.html) for details of how to migrate your templates.
+* Upgraded to Pug 3. See [Migrating to Pug 3](https://pugjs.org/api/migration-v3.html) for details of how to migrate your templates.
 * Refactored codebase to use async/await.
 * Updated all dependencies.
 
