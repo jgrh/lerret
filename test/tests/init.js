@@ -8,7 +8,7 @@ describe("init", function() {
     //system under test
     const sut = require("../../lib/init");
 
-    const fs = require("fs");
+    const fs = require("fs").promises;
     const log = require("../../lib/log");
     const yaml = require("js-yaml");
 
@@ -25,10 +25,10 @@ describe("init", function() {
     beforeEach(function () {
         logError = sandbox.stub(log, "error");
         logInfo = sandbox.stub(log, "info");
-        mkDir = sandbox.stub(fs, "mkdirAsync");
-        readDir = sandbox.stub(fs, "readdirAsync");
+        mkDir = sandbox.stub(fs, "mkdir");
+        readDir = sandbox.stub(fs, "readdir");
         safeDump = sandbox.stub(yaml, "safeDump");
-        writeFile = sandbox.stub(fs, "writeFileAsync");
+        writeFile = sandbox.stub(fs, "writeFile");
     });
 
     afterEach(function () {

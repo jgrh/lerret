@@ -14,7 +14,7 @@ describe("content/image.js", function() {
 
     const exif = require("../../../lib/content/exif");
     const formats = require("../../../lib/formats");
-    const fs = require("fs");
+    const fs = require("fs").promises;
     const helpers = require("../../../lib/content/helpers");
 
     const sandbox = sinon.createSandbox();
@@ -23,13 +23,13 @@ describe("content/image.js", function() {
     let getExtensions;
     let readExif;
     let readYaml;
-    let statAsync;
+    let stat;
 
     beforeEach(function () {
         getExtensions = sandbox.stub(formats, "getExtensions");
         readExif = sandbox.stub(exif, "readExif");
         readYaml = sandbox.stub(helpers, "readYaml");
-        statAsync = sandbox.stub(fs, "statAsync");
+        stat = sandbox.stub(fs, "stat");
     });
 
     afterEach(function () {
@@ -42,15 +42,15 @@ describe("content/image.js", function() {
             const extensions = [ ".gif", ".jpg", ".png" ];
 
             getExtensions.returns(extensions);
-            statAsync.onFirstCall().returns(Promise.resolve());
-            statAsync.returns(Promise.resolve().throw(new Error()));
+            stat.onFirstCall().returns(Promise.resolve());
+            stat.returns(Promise.resolve().throw(new Error()));
             readYaml.returns(Promise.resolve({}));
 
             await sut.loadImage(directory);
 
-            statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[0]));
-            statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[1]));
-            statAsync.should.have.been.calledWith(path.join(directory, "image" + extensions[2]));
+            stat.should.have.been.calledWith(path.join(directory, "image" + extensions[0]));
+            stat.should.have.been.calledWith(path.join(directory, "image" + extensions[1]));
+            stat.should.have.been.calledWith(path.join(directory, "image" + extensions[2]));
         });
 
         it("should throw a LerretError if no image file is found", function () {
@@ -58,7 +58,7 @@ describe("content/image.js", function() {
             const extensions = [ ".gif", ".jpg", ".png" ];
 
             getExtensions.returns(extensions);
-            statAsync.returns(Promise.resolve().throw(new Error()));
+            stat.returns(Promise.resolve().throw(new Error()));
             readYaml.returns(Promise.resolve({}));
 
             return sut.loadImage(directory).should.be.rejectedWith(LerretError, util.format("No image file found within %s", directory));
@@ -69,9 +69,9 @@ describe("content/image.js", function() {
             const extensions = [ ".gif", ".jpg", ".png" ];
 
             getExtensions.returns(extensions);
-            statAsync.onFirstCall().returns(Promise.resolve());
-            statAsync.onSecondCall().returns(Promise.resolve());
-            statAsync.onThirdCall().returns(Promise.resolve().throw(new Error()));
+            stat.onFirstCall().returns(Promise.resolve());
+            stat.onSecondCall().returns(Promise.resolve());
+            stat.onThirdCall().returns(Promise.resolve().throw(new Error()));
             readYaml.returns(Promise.resolve({}));
 
             return sut.loadImage(directory).should.be.rejectedWith(LerretError, util.format("Found more than one image file within %s", directory));
@@ -81,7 +81,7 @@ describe("content/image.js", function() {
             const directory = "./image-1";
 
             getExtensions.returns([ ".jpg" ]);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
             await sut.loadImage(directory);
@@ -93,7 +93,7 @@ describe("content/image.js", function() {
             const image = { name: "Image 1" };
 
             getExtensions.returns([ ".jpg" ]);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve(_.clone(image)));
 
             const result = await sut.loadImage("");
@@ -105,7 +105,7 @@ describe("content/image.js", function() {
             const directory = "./image-1";
 
             getExtensions.returns([ ".jpg" ]);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
             const result = await sut.loadImage(directory);
@@ -117,7 +117,7 @@ describe("content/image.js", function() {
             const directory = "./image-1";
 
             getExtensions.returns([ ".jpg" ]);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({ id: "Original Value"}));
 
             const result = await sut.loadImage(directory);
@@ -131,7 +131,7 @@ describe("content/image.js", function() {
             const imagePath = path.join(directory, "image" + extensions[0]);
 
             getExtensions.returns(extensions);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
 
             const result = await sut.loadImage(directory);
@@ -145,7 +145,7 @@ describe("content/image.js", function() {
             const imagePath = path.join(directory, "image" + extensions[0]);
 
             getExtensions.returns(extensions);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({ path: "Original Value"}));
 
             const result = await sut.loadImage(directory);
@@ -159,7 +159,7 @@ describe("content/image.js", function() {
             const imagePath = path.join(directory, "image" + extensions[0]);
 
             getExtensions.returns(extensions);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
             readExif.returns("");
 
@@ -173,7 +173,7 @@ describe("content/image.js", function() {
             const exif = "exif";
 
             getExtensions.returns([ ".jpg" ]);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({}));
             readExif.returns(exif);
 
@@ -186,7 +186,7 @@ describe("content/image.js", function() {
             const exif = "exif";
 
             getExtensions.returns([ ".jpg" ]);
-            statAsync.returns(Promise.resolve());
+            stat.returns(Promise.resolve());
             readYaml.returns(Promise.resolve({ exif: "Original Value"}));
             readExif.returns(exif);
 

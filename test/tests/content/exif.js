@@ -11,7 +11,7 @@ describe("content/exif.js", function() {
     const sut = require("../../../lib/content/exif");
 
     const exif = require("exif-parser");
-    const fs = require("fs");
+    const fs = require("fs").promises;
     const log = require("../../../lib/log");
 
     const sandbox = sinon.createSandbox();
@@ -19,16 +19,18 @@ describe("content/exif.js", function() {
     //stubs
     let createExif;
     let logVerbose;
-    let openAsync;
+    let open;
     let parseExif;
-    let readAsync;
+    let read;
+    let close;
 
     beforeEach(function () {
         createExif = sandbox.stub(exif, "create");
         logVerbose = sandbox.stub(log, "verbose");
-        openAsync = sandbox.stub(fs, "openAsync");
+        open = sandbox.stub(fs, "open");
         parseExif = sandbox.stub();
-        readAsync = sandbox.stub(fs, "readAsync");
+        read = sandbox.stub();
+        close = sandbox.stub();
     });
 
     afterEach(function () {
@@ -39,57 +41,80 @@ describe("content/exif.js", function() {
         it("should open file for reading", async function () {
             const filename = "image.jpg";
 
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.returns({ parse: parseExif });
             parseExif.returns({ tags: "" });
 
             await sut.readExif(filename);
 
-            openAsync.should.be.calledWith(filename, "r");
+            open.should.be.calledWith(filename, "r");
         });
 
         it("should throw a LerretError if file cannot be opened", function () {
             const error = new Error("error");
             const filename = "image.jpg";
 
-            openAsync.returns(Promise.resolve().throw(error));
+            open.returns(Promise.resolve().throw(error));
 
             return sut.readExif(filename).should.be.rejectedWith(LerretError, util.format("Could not read file %s; %s", filename, error.message));
         });
 
         it("should read first 65635 bytes of file", async function () {
-            const fd = "fd";
             const bytes = 65635;
 
-            openAsync.returns(Promise.resolve(fd));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.returns({ parse: parseExif });
             parseExif.returns({ tags: "" });
 
             await sut.readExif("");
 
-            readAsync.should.be.calledWithMatch(sinon.match(fd),
-                                                sinon.match.instanceOf(Buffer)
-                                                    .and(sinon.match.has("length", bytes)),
-                                                sinon.match(0),
-                                                sinon.match(bytes),
-                                                sinon.match(0));
+            read.should.be.calledWithMatch(sinon.match.instanceOf(Buffer)
+                                                .and(sinon.match.has("length", bytes)),
+                                            sinon.match(0),
+                                            sinon.match(bytes),
+                                            sinon.match(0));
         });
 
         it("should throw a LerretError if file cannot be read", function () {
             const error = new Error("error");
             const filename = "image.jpg";
 
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve().throw(error));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve().throw(error));
 
             return sut.readExif(filename).should.be.rejectedWith(LerretError, util.format("Could not read file %s; %s", filename, error.message));
         });
 
+        it("should close file", async function () {
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
+            createExif.returns({ parse: parseExif });
+            parseExif.returns({ tags: "" });
+
+            await sut.readExif("");
+
+            close.should.be.called;
+        });
+
+        it("should still close file if an error is thrown when reading the file", async function () {
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve().throw(new Error("error")));
+
+            try {
+                await sut.readExif("");
+            }
+            catch (e) {
+                //expected
+            }
+
+            close.should.be.called;
+        });
+
         it("should create exif parser", async function () {
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve());
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve());
             createExif.returns({ parse: parseExif });
             parseExif.returns({});
 
@@ -99,8 +124,8 @@ describe("content/exif.js", function() {
         });
 
         it("should return an empty object if exif parser cannot be created", async function () {
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.throws(new Error());
 
             const result = await sut.readExif("");
@@ -112,8 +137,8 @@ describe("content/exif.js", function() {
             const error = new Error("error");
             const filename = "image.jpg";
 
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.throws(error);
 
             await sut.readExif(filename);
@@ -122,8 +147,8 @@ describe("content/exif.js", function() {
         });
 
         it("should parse exif", async function () {
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.returns({ parse: parseExif });
             parseExif.returns({ tags: "" });
 
@@ -133,8 +158,8 @@ describe("content/exif.js", function() {
         });
 
         it("should return an empty object if file contents cannot be parsed", async function () {
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.returns({ parse: parseExif });
             parseExif.throws(new Error());
 
@@ -147,8 +172,8 @@ describe("content/exif.js", function() {
             const error = new Error("error");
             const filename = "image.jpg";
 
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.returns({ parse: parseExif });
             parseExif.throws(error);
 
@@ -160,8 +185,8 @@ describe("content/exif.js", function() {
         it("should return tags property from parsed exif", async function () {
             const tags = { name: "Image" };
 
-            openAsync.returns(Promise.resolve(""));
-            readAsync.returns(Promise.resolve([0, 0]));
+            open.returns(Promise.resolve({ read: read,  close: close }));
+            read.returns(Promise.resolve([0, 0]));
             createExif.returns({ parse: parseExif });
             parseExif.returns({ tags: tags });
 
