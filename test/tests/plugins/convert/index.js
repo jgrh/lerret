@@ -118,7 +118,7 @@ describe("plugins/convert/index.js", function() {
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
-            isResizeConfigured.withArgs("convert[0].").returns(true);
+            isResizeConfigured.withArgs(0).returns(true);
             gm.returns(input);
             applyResize.returns({
                 streamAsync: streamAsync
@@ -129,7 +129,7 @@ describe("plugins/convert/index.js", function() {
 
             await sut.processImage(image, 0, 0, album);
 
-            applyResize.should.have.been.calledWith("convert[0].", input);
+            applyResize.should.have.been.calledWith(0, input);
         });
 
         it("should apply unsharp if configured", async function() {
@@ -143,7 +143,7 @@ describe("plugins/convert/index.js", function() {
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
-            isUnsharpConfigured.withArgs("convert[0].").returns(true);
+            isUnsharpConfigured.withArgs(0).returns(true);
             gm.returns(input);
             applyUnsharp.returns({
                 streamAsync: streamAsync
@@ -154,7 +154,7 @@ describe("plugins/convert/index.js", function() {
 
             await sut.processImage(image, 0, 0, album);
 
-            applyUnsharp.should.have.been.calledWith("convert[0].", input);
+            applyUnsharp.should.have.been.calledWith(0, input);
         });
 
         it("should apply quality if configured", async function() {
@@ -168,7 +168,7 @@ describe("plugins/convert/index.js", function() {
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
-            isQualityConfigured.withArgs("convert[0].").returns(true);
+            isQualityConfigured.withArgs(0).returns(true);
             gm.returns(input);
             applyQuality.returns({
                 streamAsync: streamAsync
@@ -179,7 +179,7 @@ describe("plugins/convert/index.js", function() {
 
             await sut.processImage(image, 0, 0, album);
 
-            applyQuality.should.have.been.calledWith("convert[0].", input);
+            applyQuality.should.have.been.calledWith(0, input);
         });
 
         it("should apply resize, unsharp and quality in sequence", async function() {

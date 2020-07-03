@@ -15,7 +15,7 @@ describe("plugins/convert/unsharp.js", function() {
     let hasConfig;
     let unsharp;
 
-    const prefix = "prefix";
+    const conversion = 0;
 
     beforeEach(function() {
         getConfig = sandbox.stub(config, "get");
@@ -27,33 +27,33 @@ describe("plugins/convert/unsharp.js", function() {
         sandbox.restore();
     });
 
-    describe("isConfigured(prefix)", function() {
+    describe("isConfigured(conversion)", function() {
         it("should return true if unsharp configuration entry exists", function() {
-            hasConfig.withArgs(prefix + "unsharp").returns(true);
+            hasConfig.withArgs("convert[" + conversion + "].unsharp").returns(true);
 
-            sut.isConfigured(prefix).should.be.true;
+            sut.isConfigured(conversion).should.be.true;
         });
 
         it("should return false if unsharp configuration entry does not exist", function() {
-            hasConfig.withArgs(prefix + "unsharp").returns(false);
+            hasConfig.withArgs("convert[" + conversion + "].unsharp").returns(false);
 
-            sut.isConfigured(prefix).should.be.false;
+            sut.isConfigured(conversion).should.be.false;
         });
     });
 
-    describe("apply(prefix, input)", function() {
+    describe("apply(conversion, input)", function() {
         it("should sharpen image using configured radius, sigma, amount and threshold", function() {
             const radius = 1;
             const sigma = 2;
             const amount = 3;
             const threshold = 4;
 
-            getConfig.withArgs(prefix + "unsharp.radius").returns(radius);
-            getConfig.withArgs(prefix + "unsharp.sigma").returns(sigma);
-            getConfig.withArgs(prefix + "unsharp.amount").returns(amount);
-            getConfig.withArgs(prefix + "unsharp.threshold").returns(threshold);
+            getConfig.withArgs("convert[" + conversion + "].unsharp.radius").returns(radius);
+            getConfig.withArgs("convert[" + conversion + "].unsharp.sigma").returns(sigma);
+            getConfig.withArgs("convert[" + conversion + "].unsharp.amount").returns(amount);
+            getConfig.withArgs("convert[" + conversion + "].unsharp.threshold").returns(threshold);
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 unsharp: unsharp
             });
 
@@ -65,7 +65,7 @@ describe("plugins/convert/unsharp.js", function() {
 
             unsharp.returns(output);
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 unsharp: unsharp
             }).should.equal(output);
         });

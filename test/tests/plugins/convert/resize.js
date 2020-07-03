@@ -19,7 +19,7 @@ describe("plugins/convert/resize.js", function() {
     let hasConfig;
     let resize;
 
-    const prefix = "prefix";
+    const conversion = 0;
 
     beforeEach(function() {
         crop = sandbox.stub();
@@ -33,29 +33,29 @@ describe("plugins/convert/resize.js", function() {
         sandbox.restore();
     });
 
-    describe("isConfigured(prefix)", function() {
+    describe("isConfigured(conversion)", function() {
         it("should return true if resize configuration entry exists", function() {
-            hasConfig.withArgs(prefix + "resize").returns(true);
+            hasConfig.withArgs("convert[" + conversion + "].resize").returns(true);
 
-            sut.isConfigured(prefix).should.be.true;
+            sut.isConfigured(conversion).should.be.true;
         });
 
         it("should return false if resize configuration entry does not exist", function() {
-            hasConfig.withArgs(prefix + "resize").returns(false);
+            hasConfig.withArgs("convert[" + conversion + "].resize").returns(false);
 
-            sut.isConfigured(prefix).should.be.false;
+            sut.isConfigured(conversion).should.be.false;
         });
     });
 
-    describe("apply(prefix, input)", function() {
+    describe("apply(conversion, input)", function() {
         it("should resize image with width and height if configured", function() {
             const height = 300;
             const width = 400;
 
-            getConfig.withArgs(prefix + "resize.width", null).returns(width);
-            getConfig.withArgs(prefix + "resize.height", null).returns(height);
+            getConfig.withArgs("convert[" + conversion + "].resize.width", null).returns(width);
+            getConfig.withArgs("convert[" + conversion + "].resize.height", null).returns(height);
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 resize: resize
             });
 
@@ -66,10 +66,10 @@ describe("plugins/convert/resize.js", function() {
             const height = 300;
             const width = null;
 
-            getConfig.withArgs(prefix + "resize.width", null).returns(width);
-            getConfig.withArgs(prefix + "resize.height", null).returns(height);
+            getConfig.withArgs("convert[" + conversion + "].resize.width", null).returns(width);
+            getConfig.withArgs("convert[" + conversion + "].resize.height", null).returns(height);
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 resize: resize
             });
 
@@ -80,10 +80,10 @@ describe("plugins/convert/resize.js", function() {
             const height = null;
             const width = 400;
 
-            getConfig.withArgs(prefix + "resize.width", null).returns(width);
-            getConfig.withArgs(prefix + "resize.height", null).returns(height);
+            getConfig.withArgs("convert[" + conversion + "].resize.width", null).returns(width);
+            getConfig.withArgs("convert[" + conversion + "].resize.height", null).returns(height);
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 resize: resize
             });
 
@@ -95,16 +95,16 @@ describe("plugins/convert/resize.js", function() {
 
             resize.returns(output);
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 resize: resize
             }).should.equal(output);
         });
 
         it("should throw a LerretError if both width and height are null when resizing an image", function() {
-            getConfig.withArgs(prefix + "resize.width", null).returns(null);
-            getConfig.withArgs(prefix + "resize.height", null).returns(null);
+            getConfig.withArgs("convert[" + conversion + "].resize.width", null).returns(null);
+            getConfig.withArgs("convert[" + conversion + "].resize.height", null).returns(null);
 
-            (() => sut.apply(prefix, {
+            (() => sut.apply(conversion, {
                 resize: resize
             })).should.throw(LerretError, "Resizing requires at least a width or a height");
         });
@@ -113,9 +113,9 @@ describe("plugins/convert/resize.js", function() {
             const height = 300;
             const width = 400;
 
-            getConfig.withArgs(prefix + "resize.width", null).returns(width);
-            getConfig.withArgs(prefix + "resize.height", null).returns(height);
-            getConfig.withArgs(prefix + "resize.crop", false).returns(true);
+            getConfig.withArgs("convert[" + conversion + "].resize.width", null).returns(width);
+            getConfig.withArgs("convert[" + conversion + "].resize.height", null).returns(height);
+            getConfig.withArgs("convert[" + conversion + "].resize.crop", false).returns(true);
             resize.returns({
                 gravity: gravity
             });
@@ -123,7 +123,7 @@ describe("plugins/convert/resize.js", function() {
                 crop: crop
             });
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 resize: resize
             });
 
@@ -135,7 +135,7 @@ describe("plugins/convert/resize.js", function() {
         it("should result of cropping", function() {
             const output = "output";
 
-            getConfig.withArgs(prefix + "resize.crop", false).returns(true);
+            getConfig.withArgs("convert[" + conversion + "].resize.crop", false).returns(true);
             resize.returns({
                 gravity: gravity
             });
@@ -144,27 +144,27 @@ describe("plugins/convert/resize.js", function() {
             });
             crop.returns(output);
 
-            sut.apply(prefix, {
+            sut.apply(conversion, {
                 resize: resize
             }).should.equal(output);
         });
 
         it("should throw a LerretError if width is null when cropping an image", function() {
-            getConfig.withArgs(prefix + "resize.width", null).returns(null);
-            getConfig.withArgs(prefix + "resize.height", null).returns(300);
-            getConfig.withArgs(prefix + "resize.crop", false).returns(true);
+            getConfig.withArgs("convert[" + conversion + "].resize.width", null).returns(null);
+            getConfig.withArgs("convert[" + conversion + "].resize.height", null).returns(300);
+            getConfig.withArgs("convert[" + conversion + "].resize.crop", false).returns(true);
 
-            (() => sut.apply(prefix, {
+            (() => sut.apply(conversion, {
                 resize: resize
             })).should.throw(LerretError, "Cropping requires both a width and a height");
         });
 
         it("should throw a LerretError if height is null when cropping an image", function() {
-            getConfig.withArgs(prefix + "resize.width", null).returns(400);
-            getConfig.withArgs(prefix + "resize.height", null).returns(null);
-            getConfig.withArgs(prefix + "resize.crop", false).returns(true);
+            getConfig.withArgs("convert[" + conversion + "].resize.width", null).returns(400);
+            getConfig.withArgs("convert[" + conversion + "].resize.height", null).returns(null);
+            getConfig.withArgs("convert[" + conversion + "].resize.crop", false).returns(true);
 
-            (() => sut.apply(prefix, {
+            (() => sut.apply(conversion, {
                 resize: resize
             })).should.throw(LerretError, "Cropping requires both a width and a height");
         });
