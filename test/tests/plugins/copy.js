@@ -11,6 +11,7 @@ describe("plugins/copy.js", function() {
     const config = require("../../../lib/config");
     const fs = require("fs");
     const log = require("../../../lib/log");
+    const match = require("../../../lib/plugins/match");
     const writer = require("../../../lib/plugins/writer");
 
     const sandbox = sinon.createSandbox();
@@ -19,6 +20,7 @@ describe("plugins/copy.js", function() {
     let createImageFileStream;
     let createReadStream;
     let getConfig;
+    let matchImage;
     let logVerbose;
     let pipe;
 
@@ -26,6 +28,7 @@ describe("plugins/copy.js", function() {
         createImageFileStream = sandbox.stub(writer, "createImageFileStream");
         createReadStream = sandbox.stub(fs, "createReadStream");
         getConfig = sandbox.stub(config, "get");
+        matchImage = sandbox.stub(match, "image");
         logVerbose = sandbox.stub(log, "verbose");
         pipe = sandbox.stub();
 
@@ -48,6 +51,28 @@ describe("plugins/copy.js", function() {
     });
 
     describe("processImage(image, index, length, album)", function() {
+        it("should check whether image matches config", async function() {
+            const image = {
+                id: "image",
+                path: "./path/to/image.jpg"
+            };
+
+            matchImage.returns(false);
+
+            await sut.processImage(image, 0, 0, {});
+
+            matchImage.should.have.been.calledWith("copy", image);
+        });
+
+        it("should not process image if image does not match config", async function() {
+            matchImage.returns(false);
+
+            const result = await sut.processImage({}, 0, 0, {});
+
+            pipe.should.not.have.been.called;
+            assert(result === undefined);
+        });
+
         it("should log a verbose message", async function() {
             const album = {
                 id: "album"
@@ -56,6 +81,8 @@ describe("plugins/copy.js", function() {
                 id: "image",
                 path: "./path/to/image.jpg"
             };
+
+            matchImage.returns(true);
 
             await sut.processImage(image, 0, 0, album);
 
@@ -72,6 +99,7 @@ describe("plugins/copy.js", function() {
             };
             const filename = "image.jpg";
 
+            matchImage.returns(true);
             getConfig.withArgs("copy.filename", path.basename(image.path)).returns(filename);
 
             await sut.processImage(image, 0, 0, album);
@@ -84,6 +112,8 @@ describe("plugins/copy.js", function() {
                 path: "./path/to/image.jpg"
             };
 
+            matchImage.returns(true);
+
             await sut.processImage(image, 0, 0, {});
 
             createReadStream.should.have.been.calledWith(image.filename);
@@ -92,6 +122,7 @@ describe("plugins/copy.js", function() {
         it("should pipe the input stream to the output stream", async function() {
             const stream = "stream";
 
+            matchImage.returns(true);
             createImageFileStream.returns(Promise.resolve(stream));
 
             await sut.processImage({
@@ -102,6 +133,8 @@ describe("plugins/copy.js", function() {
         });
 
         it("should not return anything", async function() {
+            matchImage.returns(true);
+
             const result = await sut.processImage({
                 path: "./path/to/image"
             }, 0, 0, {});

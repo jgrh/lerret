@@ -16,6 +16,7 @@ Lerret supports GIF, JPEG, PNG and TIFF image formats. Lerret will also extract 
 ### 2.1.0
 
 * Enhance `pug` plugin to allow any of the three templates to be optional.
+* Add the ability to filter which images the `convert` and `copy` plugins apply to.
 
 ### 2.0.0
 
@@ -139,6 +140,9 @@ The following configuration keys are available.
         * `sigma` (required)
         * `amount` (required)
         * `threshold` (required)
+    * `match` (optional) - Used to filter which images this conversion applies to.
+        * `property` (required) - The image property to match on.
+        * `regex` (required) - The regular expression applied.
 
 #### copy
 
@@ -148,6 +152,9 @@ The following configuration keys are available.
 
 * `copy` (optional)
     * `filename` (optional, default: the source image's filename) - The filename to use when copying the image to the target location.
+    * `match` (optional) - Used to filter which images this plugin applies to.
+        * `property` (required) - The image property to match on.
+        * `regex` (required) - The regular expression applied.
 
 #### pug
 

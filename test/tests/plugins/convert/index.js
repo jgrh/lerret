@@ -12,6 +12,7 @@ describe("plugins/convert/index.js", function() {
     const config = require("../../../../lib/config");
     const formats = require("../../../../lib/formats");
     const log = require("../../../../lib/log");
+    const match = require("../../../../lib/plugins/match");
     const quality = require("../../../../lib/plugins/convert/quality");
     const resize = require("../../../../lib/plugins/convert/resize");
     const unsharp = require("../../../../lib/plugins/convert/unsharp");
@@ -27,6 +28,7 @@ describe("plugins/convert/index.js", function() {
     let getConfig;
     let getFormat;
     let gm;
+    let matchImage;
     let isQualityConfigured;
     let isResizeConfigured;
     let isUnsharpConfigured;
@@ -42,6 +44,7 @@ describe("plugins/convert/index.js", function() {
         getConfig = sandbox.stub(config, "get");
         getFormat = sandbox.stub(formats, "getFormat");
         gm = sandbox.stub();
+        matchImage = sandbox.stub(match, "image");
         isQualityConfigured = sandbox.stub(quality, "isConfigured");
         isResizeConfigured = sandbox.stub(resize, "isConfigured");
         isUnsharpConfigured = sandbox.stub(unsharp, "isConfigured");
@@ -65,6 +68,30 @@ describe("plugins/convert/index.js", function() {
     });
 
     describe("processImage(image, index, length, album)", function() {
+        it("should check whether image matches config", async function() {
+            const image = {
+                id: "image",
+                path: "./path/to/image.jpg"
+            };
+
+            getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(false);
+
+            await sut.processImage(image, 0, 0, {});
+
+            matchImage.should.have.been.calledWith("convert[0]", image);
+        });
+
+        it("should not process image if image does not match config", async function() {
+            getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(false);
+
+            const result = await sut.processImage({}, 0, 0, {});
+
+            pipe.should.not.have.been.called;
+            assert(result === undefined);
+        });
+
         it("should log a verbose message", async function() {
             const album = {
                 id: "album"
@@ -75,6 +102,7 @@ describe("plugins/convert/index.js", function() {
             };
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns(filename);
             gm.returns({
                 streamAsync: streamAsync
@@ -94,6 +122,7 @@ describe("plugins/convert/index.js", function() {
             };
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             gm.returns({
                 streamAsync: streamAsync
@@ -117,6 +146,7 @@ describe("plugins/convert/index.js", function() {
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isResizeConfigured.withArgs(0).returns(true);
             gm.returns(input);
@@ -142,6 +172,7 @@ describe("plugins/convert/index.js", function() {
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isUnsharpConfigured.withArgs(0).returns(true);
             gm.returns(input);
@@ -167,6 +198,7 @@ describe("plugins/convert/index.js", function() {
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isQualityConfigured.withArgs(0).returns(true);
             gm.returns(input);
@@ -194,6 +226,7 @@ describe("plugins/convert/index.js", function() {
             const unsharpOutput = "unsharpOutput";
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isResizeConfigured.returns(true);
             isUnsharpConfigured.returns(true);
@@ -225,6 +258,7 @@ describe("plugins/convert/index.js", function() {
             };
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns(filename);
             gm.returns({
                 streamAsync: streamAsync
@@ -248,6 +282,7 @@ describe("plugins/convert/index.js", function() {
             };
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns(filename);
             gm.returns({
                 streamAsync: streamAsync
@@ -272,6 +307,7 @@ describe("plugins/convert/index.js", function() {
             };
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns(filename);
             gm.returns({
                 streamAsync: streamAsync
@@ -296,6 +332,7 @@ describe("plugins/convert/index.js", function() {
             const stream = "stream";
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             gm.returns({
                 streamAsync: streamAsync
@@ -316,6 +353,7 @@ describe("plugins/convert/index.js", function() {
             };
 
             getConfig.withArgs("convert").returns([{}]);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             gm.returns({
                 streamAsync: streamAsync
@@ -336,6 +374,7 @@ describe("plugins/convert/index.js", function() {
             };
 
             getConfig.withArgs("convert").returns(config);
+            matchImage.returns(true);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             getConfig.withArgs("convert[1].filename").returns("output.jpg");
             gm.returns({
@@ -347,6 +386,7 @@ describe("plugins/convert/index.js", function() {
 
             await sut.processImage(image, 0, 0, {});
 
+            matchImage.should.have.callCount(config.length);
             streamAsync.should.have.callCount(config.length);
             createImageFileStream.should.have.callCount(config.length);
         });
