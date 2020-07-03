@@ -34,7 +34,7 @@ describe("plugins/convert/index.js", function() {
     let pipe;
     let streamAsync;
 
-    beforeEach(function () {
+    beforeEach(function() {
         applyQuality = sandbox.stub(quality, "apply");
         applyResize = sandbox.stub(resize, "apply");
         applyUnsharp = sandbox.stub(unsharp, "apply");
@@ -52,101 +52,143 @@ describe("plugins/convert/index.js", function() {
         sut.__set__("gm", gm);
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    it("exports name", function () {
+    it("exports name", function() {
         sut.name.should.equal("convert");
     });
 
-    it("exports processImage", function () {
+    it("exports processImage", function() {
         sut.processImage.should.not.be.undefined;
     });
 
-    describe("processImage(image, index, length, album)", function () {
-        it("should log a verbose message", async function () {
-            const album = { id: "album" };
+    describe("processImage(image, index, length, album)", function() {
+        it("should log a verbose message", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "output.jpg";
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns(filename);
-            gm.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            gm.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
             logVerbose.should.have.been.calledWith("Converting image %s/%s to %s", album.id, image.id, filename);
         });
 
-        it("should pass image path to gm", async function () {
-            const image = { path: "./image.jpg" };
+        it("should pass image path to gm", async function() {
+            const image = {
+                path: "./image.jpg"
+            };
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
-            gm.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            gm.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, {});
 
             gm.should.have.been.calledWith(image.path);
         });
 
-        it("should apply resize if configured", async function () {
-            const album = { id: "album" };
-            const image = { id: "image" };
+        it("should apply resize if configured", async function() {
+            const album = {
+                id: "album"
+            };
+            const image = {
+                id: "image"
+            };
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isResizeConfigured.withArgs("convert[0].").returns(true);
             gm.returns(input);
-            applyResize.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            applyResize.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
             applyResize.should.have.been.calledWith("convert[0].", input);
         });
 
-        it("should apply unsharp if configured", async function () {
-            const album = { id: "album" };
-            const image = { id: "image" };
+        it("should apply unsharp if configured", async function() {
+            const album = {
+                id: "album"
+            };
+            const image = {
+                id: "image"
+            };
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isUnsharpConfigured.withArgs("convert[0].").returns(true);
             gm.returns(input);
-            applyUnsharp.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            applyUnsharp.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
             applyUnsharp.should.have.been.calledWith("convert[0].", input);
         });
 
-        it("should apply quality if configured", async function () {
-            const album = { id: "album" };
-            const image = { id: "image" };
+        it("should apply quality if configured", async function() {
+            const album = {
+                id: "album"
+            };
+            const image = {
+                id: "image"
+            };
             const input = "input";
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             isQualityConfigured.withArgs("convert[0].").returns(true);
             gm.returns(input);
-            applyQuality.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            applyQuality.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
             applyQuality.should.have.been.calledWith("convert[0].", input);
         });
 
-        it("should apply resize, unsharp and quality in sequence", async function () {
-            const album = { id: "album" };
-            const image = { id: "image" };
+        it("should apply resize, unsharp and quality in sequence", async function() {
+            const album = {
+                id: "album"
+            };
+            const image = {
+                id: "image"
+            };
             const input = "input";
             const resizeOutput = "resizeOutput";
             const unsharpOutput = "unsharpOutput";
@@ -159,8 +201,12 @@ describe("plugins/convert/index.js", function() {
             gm.returns(input);
             applyResize.returns(resizeOutput);
             applyUnsharp.returns(unsharpOutput);
-            applyQuality.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            applyQuality.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
@@ -169,62 +215,94 @@ describe("plugins/convert/index.js", function() {
             applyQuality.should.have.been.calledWith(sinon.match.any, unsharpOutput);
         });
 
-        it("should create file output stream to configured filename", async function () {
-            const album = { id: "album" };
+        it("should create file output stream to configured filename", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "output.jpg";
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns(filename);
-            gm.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            gm.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
             createImageFileStream.should.have.been.calledWith(album, image, filename);
         });
 
-        it("should get target file format based upon the extension of the configured filename", async function () {
-            const album = { id: "album" };
+        it("should get target file format based upon the extension of the configured filename", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "output.jpg";
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns(filename);
-            gm.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            gm.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
             getFormat.should.have.been.calledWith(path.extname(filename));
         });
 
-        it("should stream resized image in the target file format", async function () {
-            const album = { id: "album" };
+        it("should stream resized image in the target file format", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "output.jpg";
             const format = "jpeg";
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns(filename);
-            gm.returns({ streamAsync: streamAsync });
+            gm.returns({
+                streamAsync: streamAsync
+            });
             getFormat.returns(format);
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, album);
 
             streamAsync.should.have.been.calledWith(format);
         });
 
-        it("should pipe gm output to file output stream", async function () {
-            const album = { id: "album" };
-            const image = { id: "image" };
+        it("should pipe gm output to file output stream", async function() {
+            const album = {
+                id: "album"
+            };
+            const image = {
+                id: "image"
+            };
             const stream = "stream";
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
-            gm.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            gm.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
             createImageFileStream.returns(stream);
 
             await sut.processImage(image, 0, 0, album);
@@ -232,28 +310,40 @@ describe("plugins/convert/index.js", function() {
             pipe.should.have.been.calledWith(stream);
         });
 
-        it("should not return anything", async function () {
-            const image = { id: "image" };
+        it("should not return anything", async function() {
+            const image = {
+                id: "image"
+            };
 
             getConfig.withArgs("convert").returns([{}]);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
-            gm.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            gm.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             const result = await sut.processImage(image, 0, 0, {});
 
             assert(result === undefined);
         });
 
-        it("should convert image for each config entry", async function () {
+        it("should convert image for each config entry", async function() {
             const config = [{}, {}];
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
 
             getConfig.withArgs("convert").returns(config);
             getConfig.withArgs("convert[0].filename").returns("output.jpg");
             getConfig.withArgs("convert[1].filename").returns("output.jpg");
-            gm.returns({ streamAsync: streamAsync });
-            streamAsync.returns(Promise.resolve({ pipe: pipe }));
+            gm.returns({
+                streamAsync: streamAsync
+            });
+            streamAsync.returns(Promise.resolve({
+                pipe: pipe
+            }));
 
             await sut.processImage(image, 0, 0, {});
 

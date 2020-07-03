@@ -23,7 +23,7 @@ describe("content/images.js", function() {
     let loadImage;
     let logInfo;
 
-    beforeEach(function () {
+    beforeEach(function() {
         getConfig = sandbox.stub(config, "get");
         hasConfig = sandbox.stub(config, "has");
         listSubdirectories = sandbox.stub(helpers, "listSubdirectories");
@@ -31,12 +31,12 @@ describe("content/images.js", function() {
         logInfo = sandbox.stub(log, "info");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("loadImages(album)", function () {
-        it("should list subdirectories within supplied directory", async function () {
+    describe("loadImages(album)", function() {
+        it("should list subdirectories within supplied directory", async function() {
             const directory = "./album";
 
             listSubdirectories.returns(Promise.resolve([]));
@@ -46,7 +46,7 @@ describe("content/images.js", function() {
             listSubdirectories.should.have.been.calledWith(directory);
         });
 
-        it("should log an info message with found images", async function () {
+        it("should log an info message with found images", async function() {
             const album = "./path/to/album";
             const directory1 = "./path/to/a";
             const directory2 = "./path/to/b";
@@ -58,11 +58,15 @@ describe("content/images.js", function() {
             logInfo.should.have.been.calledWith("Found images %s within album %s", [path.basename(directory1), path.basename(directory2)].join(", "), path.basename(album));
         });
 
-        it("should load image from each subdirectory and returns them as an array", async function () {
+        it("should load image from each subdirectory and returns them as an array", async function() {
             const directory1 = "./path/to/a";
             const directory2 = "./path/to/b";
-            const image1 = { id: "image1" };
-            const image2 = { id: "image2" };
+            const image1 = {
+                id: "image1"
+            };
+            const image2 = {
+                id: "image2"
+            };
 
             listSubdirectories.returns(Promise.resolve([directory1, directory2]));
             loadImage.withArgs(directory1).returns(image1);
@@ -75,10 +79,19 @@ describe("content/images.js", function() {
             _.each(image2, (value, key) => result[1].should.have.property(key, value));
         });
 
-        it("should sort images by single property and order", async function () {
-            const image1 = { id: "image1", order: 2 };
-            const image2 = { id: "image2", order: 1 };
-            const image3 = { id: "image3", order: 3 };
+        it("should sort images by single property and order", async function() {
+            const image1 = {
+                id: "image1",
+                order: 2
+            };
+            const image2 = {
+                id: "image2",
+                order: 1
+            };
+            const image3 = {
+                id: "image3",
+                order: 3
+            };
             const sortBy = "order";
             const sortOrder = "desc";
 
@@ -98,13 +111,29 @@ describe("content/images.js", function() {
             result[2].should.have.property("id", image2.id);
         });
 
-        it("should sort images by multiple properties and orders", async function () {
-            const image1 = { id: "image1", firstOrder: 1, secondOrder: 1 };
-            const image2 = { id: "image2", firstOrder: 2, secondOrder: 1 };
-            const image3 = { id: "image3", firstOrder: 1, secondOrder: 2 };
-            const image4 = { id: "image4", firstOrder: 2, secondOrder: 2 };
-            const sortBy = [ "firstOrder", "secondOrder" ];
-            const sortOrder = [ "asc", "desc" ];
+        it("should sort images by multiple properties and orders", async function() {
+            const image1 = {
+                id: "image1",
+                firstOrder: 1,
+                secondOrder: 1
+            };
+            const image2 = {
+                id: "image2",
+                firstOrder: 2,
+                secondOrder: 1
+            };
+            const image3 = {
+                id: "image3",
+                firstOrder: 1,
+                secondOrder: 2
+            };
+            const image4 = {
+                id: "image4",
+                firstOrder: 2,
+                secondOrder: 2
+            };
+            const sortBy = ["firstOrder", "secondOrder"];
+            const sortOrder = ["asc", "desc"];
 
             listSubdirectories.returns(Promise.resolve(["", "", "", ""]));
             loadImage

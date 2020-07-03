@@ -18,17 +18,17 @@ describe("content/album.js", function() {
     let loadImages;
     let readYaml;
 
-    beforeEach(function () {
+    beforeEach(function() {
         loadImages = sandbox.stub(images, "loadImages");
         readYaml = sandbox.stub(helpers, "readYaml");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("loadAlbum(album)", async function () {
-        it("should read album.yaml from supplied directory", async function () {
+    describe("loadAlbum(album)", async function() {
+        it("should read album.yaml from supplied directory", async function() {
             const directory = "./album-1";
 
             readYaml.returns(Promise.resolve({}));
@@ -38,8 +38,10 @@ describe("content/album.js", function() {
             readYaml.should.have.been.calledWith(path.join(directory, "album.yaml"));
         });
 
-        it("should await parsed album.yaml", async function () {
-            const album = { name: "Album 1" };
+        it("should await parsed album.yaml", async function() {
+            const album = {
+                name: "Album 1"
+            };
 
             readYaml.returns(Promise.resolve(_.clone(album)));
 
@@ -48,7 +50,7 @@ describe("content/album.js", function() {
             _.each(album, (value, key) => result.should.have.property(key, value));
         });
 
-        it("should extend parsed album.yaml with id", async function () {
+        it("should extend parsed album.yaml with id", async function() {
             const directory = "./album-1";
 
             readYaml.returns(Promise.resolve({}));
@@ -58,19 +60,25 @@ describe("content/album.js", function() {
             result.should.have.property("id", path.basename(directory));
         });
 
-        it("should overwrite existing id property from album.yaml if there is one", async function () {
+        it("should overwrite existing id property from album.yaml if there is one", async function() {
             const directory = "./album-1";
 
-            readYaml.returns(Promise.resolve({ id: "Original Value"}));
+            readYaml.returns(Promise.resolve({
+                id: "Original Value"
+            }));
 
             const result = await sut.loadAlbum(directory);
 
             result.should.have.property("id", path.basename(directory));
         });
 
-        it("should extend parsed album.yaml with images", async function () {
+        it("should extend parsed album.yaml with images", async function() {
             const directory = "./album-1";
-            const images = [{ id: "image1" }, { id: "image2" }];
+            const images = [{
+                id: "image1"
+            }, {
+                id: "image2"
+            }];
 
             readYaml.returns(Promise.resolve({}));
             loadImages.withArgs(directory).returns(Promise.resolve(images));
@@ -80,10 +88,16 @@ describe("content/album.js", function() {
             result.should.have.property("images", images);
         });
 
-        it("should overwrite existing images property from album.yaml if there is one", async function () {
-            const images = [{ id: "image1" }, { id: "image2" }];
+        it("should overwrite existing images property from album.yaml if there is one", async function() {
+            const images = [{
+                id: "image1"
+            }, {
+                id: "image2"
+            }];
 
-            readYaml.returns(Promise.resolve({ images: "Original Value" }));
+            readYaml.returns(Promise.resolve({
+                images: "Original Value"
+            }));
             loadImages.returns(Promise.resolve(images));
 
             const result = await sut.loadAlbum("");

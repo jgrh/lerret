@@ -19,19 +19,19 @@ describe("plugins/writer.js", function() {
     let getConfig;
     let outputFile;
 
-    beforeEach(function () {
+    beforeEach(function() {
         createWriteStream = sandbox.stub(fs, "createWriteStream");
         ensureDir = sandbox.stub(fs, "ensureDir");
         getConfig = sandbox.stub(config, "get");
         outputFile = sandbox.stub(fs, "outputFile");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("writeRootFile(name, data)", function () {
-        it("should write data to path constructed from configured target directory and filename", async function () {
+    describe("writeRootFile(name, data)", function() {
+        it("should write data to path constructed from configured target directory and filename", async function() {
             const data = "data";
             const filename = "index.html";
             const targetDirectory = "./target";
@@ -45,8 +45,8 @@ describe("plugins/writer.js", function() {
         });
     });
 
-    describe("createRootFileStream(name)", function () {
-        it("should ensure that the directory of the output file exists", async function () {
+    describe("createRootFileStream(name)", function() {
+        it("should ensure that the directory of the output file exists", async function() {
             const filename = "index.html";
             const targetDirectory = "./target";
 
@@ -58,7 +58,7 @@ describe("plugins/writer.js", function() {
             ensureDir.should.be.calledWith(path.dirname(path.join(targetDirectory, filename)));
         });
 
-        it("should ensure that the directory of the output file exists before creating the write stream", async function () {
+        it("should ensure that the directory of the output file exists before creating the write stream", async function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
@@ -69,7 +69,7 @@ describe("plugins/writer.js", function() {
             sinon.assert.callOrder(ensureDir, createWriteStream);
         });
 
-        it("should create write stream to path constructed from configured target directory and filename", async function () {
+        it("should create write stream to path constructed from configured target directory and filename", async function() {
             const filename = "index.html";
             const targetDirectory = "./target";
 
@@ -81,7 +81,7 @@ describe("plugins/writer.js", function() {
             createWriteStream.should.be.calledWith(path.join(targetDirectory, filename));
         });
 
-        it("should return write stream", async function () {
+        it("should return write stream", async function() {
             const stream = "stream";
 
             getConfig.returns("");
@@ -94,9 +94,11 @@ describe("plugins/writer.js", function() {
         });
     });
 
-    describe("writeAlbumFile(album, name, data)", function () {
-        it("should write data to path constructed from configured target directory, album ID and filename", async function () {
-            const album = { id: "album" };
+    describe("writeAlbumFile(album, name, data)", function() {
+        it("should write data to path constructed from configured target directory, album ID and filename", async function() {
+            const album = {
+                id: "album"
+            };
             const data = "data";
             const filename = "index.html";
             const targetDirectory = "./target";
@@ -110,9 +112,11 @@ describe("plugins/writer.js", function() {
         });
     });
 
-    describe("createAlbumFileStream(album, name)", function () {
-        it("should ensure that the directory of the output file exists", async function () {
-            const album = { id: "album" };
+    describe("createAlbumFileStream(album, name)", function() {
+        it("should ensure that the directory of the output file exists", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "index.html";
             const targetDirectory = "./target";
 
@@ -124,19 +128,23 @@ describe("plugins/writer.js", function() {
             ensureDir.should.be.calledWith(path.dirname(path.join(targetDirectory, album.id, filename)));
         });
 
-        it("should ensure that the directory of the output file exists before creating the write stream", async function () {
+        it("should ensure that the directory of the output file exists before creating the write stream", async function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
             ensureDir.returns(Promise.resolve());
 
-            await sut.createAlbumFileStream({ id: "" }, "");
+            await sut.createAlbumFileStream({
+                id: ""
+            }, "");
 
             sinon.assert.callOrder(ensureDir, createWriteStream);
         });
 
-        it("should create output stream to path constructed from configured target directory, album ID and filename", async function () {
-            const album = { id: "album" };
+        it("should create output stream to path constructed from configured target directory, album ID and filename", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "index.html";
             const targetDirectory = "./target";
 
@@ -148,25 +156,31 @@ describe("plugins/writer.js", function() {
             createWriteStream.should.be.calledWith(path.join(targetDirectory, album.id, filename));
         });
 
-        it("should return write stream", async function () {
+        it("should return write stream", async function() {
             const stream = "stream";
 
             getConfig.returns("");
             ensureDir.returns(Promise.resolve());
             createWriteStream.returns(Promise.resolve(stream));
 
-            const result = await sut.createAlbumFileStream({ id: "" }, "");
+            const result = await sut.createAlbumFileStream({
+                id: ""
+            }, "");
 
             result.should.equal(stream);
         });
     });
 
-    describe("writeImageFile(album, image, name, data)", function () {
-        it("should write data to path constructed from configured target directory, album ID, image ID and filename", async function () {
-            const album = { id: "album" };
+    describe("writeImageFile(album, image, name, data)", function() {
+        it("should write data to path constructed from configured target directory, album ID, image ID and filename", async function() {
+            const album = {
+                id: "album"
+            };
             const data = "data";
             const filename = "index.html";
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
@@ -178,11 +192,15 @@ describe("plugins/writer.js", function() {
         });
     });
 
-    describe("createImageFileStream(album, image, name)", function () {
-        it("should ensure that the directory of the output file exists", async function () {
-            const album = { id: "album" };
+    describe("createImageFileStream(album, image, name)", function() {
+        it("should ensure that the directory of the output file exists", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "index.html";
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
@@ -193,22 +211,30 @@ describe("plugins/writer.js", function() {
             ensureDir.should.be.calledWith(path.dirname(path.join(targetDirectory, album.id, image.id, filename)));
         });
 
-        it("should ensure that the directory of the output file exists before creating the write stream", async function () {
+        it("should ensure that the directory of the output file exists before creating the write stream", async function() {
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
             ensureDir.returns(Promise.resolve());
 
-            await sut.createImageFileStream({ id: "" }, { id: "" }, "");
+            await sut.createImageFileStream({
+                id: ""
+            }, {
+                id: ""
+            }, "");
 
             sinon.assert.callOrder(ensureDir, createWriteStream);
         });
 
 
-        it("should create output stream to path constructed from configured target directory, album ID, image ID and filename", async function () {
-            const album = { id: "album" };
+        it("should create output stream to path constructed from configured target directory, album ID, image ID and filename", async function() {
+            const album = {
+                id: "album"
+            };
             const filename = "index.html";
-            const image = { id: "image" };
+            const image = {
+                id: "image"
+            };
             const targetDirectory = "./target";
 
             getConfig.withArgs("targetDirectory").returns(targetDirectory);
@@ -219,14 +245,18 @@ describe("plugins/writer.js", function() {
             createWriteStream.should.be.calledWith(path.join(targetDirectory, album.id, image.id, filename));
         });
 
-        it("should return write stream", async function () {
+        it("should return write stream", async function() {
             const stream = "stream";
 
             getConfig.returns("");
             ensureDir.returns(Promise.resolve());
             createWriteStream.returns(stream);
 
-            const result = await sut.createImageFileStream({ id: "" }, { id: "" }, "");
+            const result = await sut.createImageFileStream({
+                id: ""
+            }, {
+                id: ""
+            }, "");
 
             result.should.equal(stream);
         });

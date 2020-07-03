@@ -24,7 +24,7 @@ describe("content/exif.js", function() {
     let read;
     let close;
 
-    beforeEach(function () {
+    beforeEach(function() {
         createExif = sandbox.stub(exif, "create");
         logVerbose = sandbox.stub(log, "verbose");
         open = sandbox.stub(fs, "open");
@@ -33,25 +33,32 @@ describe("content/exif.js", function() {
         close = sandbox.stub();
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("readExif(filename)", function () {
-        it("should open file for reading", async function () {
+    describe("readExif(filename)", function() {
+        it("should open file for reading", async function() {
             const filename = "image.jpg";
 
-            open.returns(Promise.resolve({ read: read,  close: close }));
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
-            createExif.returns({ parse: parseExif });
-            parseExif.returns({ tags: "" });
+            createExif.returns({
+                parse: parseExif
+            });
+            parseExif.returns({
+                tags: ""
+            });
 
             await sut.readExif(filename);
 
             open.should.be.calledWith(filename, "r");
         });
 
-        it("should throw a LerretError if file cannot be opened", function () {
+        it("should throw a LerretError if file cannot be opened", function() {
             const error = new Error("error");
             const filename = "image.jpg";
 
@@ -60,62 +67,86 @@ describe("content/exif.js", function() {
             return sut.readExif(filename).should.be.rejectedWith(LerretError, util.format("Could not read file %s; %s", filename, error.message));
         });
 
-        it("should read first 65635 bytes of file", async function () {
+        it("should read first 65635 bytes of file", async function() {
             const bytes = 65635;
 
-            open.returns(Promise.resolve({ read: read,  close: close }));
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
-            createExif.returns({ parse: parseExif });
-            parseExif.returns({ tags: "" });
+            createExif.returns({
+                parse: parseExif
+            });
+            parseExif.returns({
+                tags: ""
+            });
 
             await sut.readExif("");
 
             read.should.be.calledWithMatch(sinon.match.instanceOf(Buffer)
-                                                .and(sinon.match.has("length", bytes)),
-                                            sinon.match(0),
-                                            sinon.match(bytes),
-                                            sinon.match(0));
+                .and(sinon.match.has("length", bytes)),
+                sinon.match(0),
+                sinon.match(bytes),
+                sinon.match(0));
         });
 
-        it("should throw a LerretError if file cannot be read", function () {
+        it("should throw a LerretError if file cannot be read", function() {
             const error = new Error("error");
             const filename = "image.jpg";
 
-            open.returns(Promise.resolve({ read: read,  close: close }));
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve().throw(error));
 
             return sut.readExif(filename).should.be.rejectedWith(LerretError, util.format("Could not read file %s; %s", filename, error.message));
         });
 
-        it("should close file", async function () {
-            open.returns(Promise.resolve({ read: read,  close: close }));
+        it("should close file", async function() {
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
-            createExif.returns({ parse: parseExif });
-            parseExif.returns({ tags: "" });
+            createExif.returns({
+                parse: parseExif
+            });
+            parseExif.returns({
+                tags: ""
+            });
 
             await sut.readExif("");
 
             close.should.be.called;
         });
 
-        it("should still close file if an error is thrown when reading the file", async function () {
-            open.returns(Promise.resolve({ read: read,  close: close }));
+        it("should still close file if an error is thrown when reading the file", async function() {
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve().throw(new Error("error")));
 
             try {
                 await sut.readExif("");
-            }
-            catch (e) {
+            } catch (e) {
                 //expected
             }
 
             close.should.be.called;
         });
 
-        it("should create exif parser", async function () {
-            open.returns(Promise.resolve({ read: read,  close: close }));
+        it("should create exif parser", async function() {
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve());
-            createExif.returns({ parse: parseExif });
+            createExif.returns({
+                parse: parseExif
+            });
             parseExif.returns({});
 
             await sut.readExif("");
@@ -123,8 +154,11 @@ describe("content/exif.js", function() {
             createExif.should.be.calledWithMatch(sinon.match.instanceOf(Buffer));
         });
 
-        it("should return an empty object if exif parser cannot be created", async function () {
-            open.returns(Promise.resolve({ read: read,  close: close }));
+        it("should return an empty object if exif parser cannot be created", async function() {
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
             createExif.throws(new Error());
 
@@ -133,11 +167,14 @@ describe("content/exif.js", function() {
             result.should.eql({});
         });
 
-        it("should log a verbose message if exif parser cannot be created", async function () {
+        it("should log a verbose message if exif parser cannot be created", async function() {
             const error = new Error("error");
             const filename = "image.jpg";
 
-            open.returns(Promise.resolve({ read: read,  close: close }));
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
             createExif.throws(error);
 
@@ -146,21 +183,33 @@ describe("content/exif.js", function() {
             logVerbose.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
         });
 
-        it("should parse exif", async function () {
-            open.returns(Promise.resolve({ read: read,  close: close }));
+        it("should parse exif", async function() {
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
-            createExif.returns({ parse: parseExif });
-            parseExif.returns({ tags: "" });
+            createExif.returns({
+                parse: parseExif
+            });
+            parseExif.returns({
+                tags: ""
+            });
 
             await sut.readExif("");
 
             parseExif.should.be.called;
         });
 
-        it("should return an empty object if file contents cannot be parsed", async function () {
-            open.returns(Promise.resolve({ read: read,  close: close }));
+        it("should return an empty object if file contents cannot be parsed", async function() {
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
-            createExif.returns({ parse: parseExif });
+            createExif.returns({
+                parse: parseExif
+            });
             parseExif.throws(new Error());
 
             const result = await sut.readExif("");
@@ -168,13 +217,18 @@ describe("content/exif.js", function() {
             result.should.eql({});
         });
 
-        it("should log a verbose message if file contents cannot be parsed", async function () {
+        it("should log a verbose message if file contents cannot be parsed", async function() {
             const error = new Error("error");
             const filename = "image.jpg";
 
-            open.returns(Promise.resolve({ read: read,  close: close }));
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
-            createExif.returns({ parse: parseExif });
+            createExif.returns({
+                parse: parseExif
+            });
             parseExif.throws(error);
 
             await sut.readExif(filename);
@@ -182,13 +236,22 @@ describe("content/exif.js", function() {
             logVerbose.should.have.been.calledWith("No exif read from file %s; %s", filename, error.message);
         });
 
-        it("should return tags property from parsed exif", async function () {
-            const tags = { name: "Image" };
+        it("should return tags property from parsed exif", async function() {
+            const tags = {
+                name: "Image"
+            };
 
-            open.returns(Promise.resolve({ read: read,  close: close }));
+            open.returns(Promise.resolve({
+                read: read,
+                close: close
+            }));
             read.returns(Promise.resolve([0, 0]));
-            createExif.returns({ parse: parseExif });
-            parseExif.returns({ tags: tags });
+            createExif.returns({
+                parse: parseExif
+            });
+            parseExif.returns({
+                tags: tags
+            });
 
             const result = await sut.readExif("");
 

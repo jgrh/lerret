@@ -23,7 +23,7 @@ describe("content/albums.js", function() {
     let loadAlbum;
     let logInfo;
 
-    beforeEach(function () {
+    beforeEach(function() {
         getConfig = sandbox.stub(config, "get");
         hasConfig = sandbox.stub(config, "has");
         listSubdirectories = sandbox.stub(helpers, "listSubdirectories");
@@ -31,12 +31,12 @@ describe("content/albums.js", function() {
         logInfo = sandbox.stub(log, "info");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("loadAlbums()", function () {
-        it("should list subdirectories within content directory", async function () {
+    describe("loadAlbums()", function() {
+        it("should list subdirectories within content directory", async function() {
             const contentDirectory = "./content";
 
             getConfig.withArgs("contentDirectory").returns(contentDirectory);
@@ -47,7 +47,7 @@ describe("content/albums.js", function() {
             listSubdirectories.should.have.been.calledWith(contentDirectory);
         });
 
-        it("should log an info message with found albums", async function () {
+        it("should log an info message with found albums", async function() {
             const directory1 = "./path/to/a";
             const directory2 = "./path/to/b";
 
@@ -58,11 +58,15 @@ describe("content/albums.js", function() {
             logInfo.should.have.been.calledWith("Found albums %s", [path.basename(directory1), path.basename(directory2)].join(", "));
         });
 
-        it("should load album from each subdirectory and returns them as an array", async function () {
+        it("should load album from each subdirectory and returns them as an array", async function() {
             const directory1 = "./a";
             const directory2 = "./b";
-            const album1 = { id: "album1" };
-            const album2 = { id: "album2" };
+            const album1 = {
+                id: "album1"
+            };
+            const album2 = {
+                id: "album2"
+            };
 
             listSubdirectories.returns(Promise.resolve([directory1, directory2]));
             loadAlbum.withArgs(directory1).returns(album1);
@@ -75,10 +79,19 @@ describe("content/albums.js", function() {
             _.each(album2, (value, key) => result[1].should.have.property(key, value));
         });
 
-        it("should sort albums by single property and order", async function () {
-            const album1 = { id: "album1", order: 2 };
-            const album2 = { id: "album2", order: 1 };
-            const album3 = { id: "album3", order: 3 };
+        it("should sort albums by single property and order", async function() {
+            const album1 = {
+                id: "album1",
+                order: 2
+            };
+            const album2 = {
+                id: "album2",
+                order: 1
+            };
+            const album3 = {
+                id: "album3",
+                order: 3
+            };
             const sortBy = "order";
             const sortOrder = "desc";
 
@@ -98,13 +111,29 @@ describe("content/albums.js", function() {
             result[2].should.have.property("id", album2.id);
         });
 
-        it("should sort albums by multiple properties and orders", async function () {
-            const album1 = { id: "album1", firstOrder: 1, secondOrder: 1 };
-            const album2 = { id: "album2", firstOrder: 2, secondOrder: 1 };
-            const album3 = { id: "album3", firstOrder: 1, secondOrder: 2 };
-            const album4 = { id: "album4", firstOrder: 2, secondOrder: 2 };
-            const sortBy = [ "firstOrder", "secondOrder" ];
-            const sortOrder = [ "asc", "desc" ];
+        it("should sort albums by multiple properties and orders", async function() {
+            const album1 = {
+                id: "album1",
+                firstOrder: 1,
+                secondOrder: 1
+            };
+            const album2 = {
+                id: "album2",
+                firstOrder: 2,
+                secondOrder: 1
+            };
+            const album3 = {
+                id: "album3",
+                firstOrder: 1,
+                secondOrder: 2
+            };
+            const album4 = {
+                id: "album4",
+                firstOrder: 2,
+                secondOrder: 2
+            };
+            const sortBy = ["firstOrder", "secondOrder"];
+            const sortOrder = ["asc", "desc"];
 
             listSubdirectories.returns(Promise.resolve(["", "", "", ""]));
             loadAlbum

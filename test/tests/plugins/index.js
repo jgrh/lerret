@@ -32,7 +32,7 @@ describe("plugins/index.js", function() {
     let requireModule;
     let stat;
 
-    beforeEach(function () {
+    beforeEach(function() {
         getConfig = sandbox.stub(config, "get");
         getPluginSequence = sandbox.stub(plugins, "getPluginSequence");
         installPlugin = sandbox.stub(plugins, "installPlugin");
@@ -42,12 +42,12 @@ describe("plugins/index.js", function() {
         stat = sandbox.stub(fs, "stat");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("initPlugins()", function () {
-        it("should log a verbose message for installation of built-in plugins", async function () {
+    describe("initPlugins()", function() {
+        it("should log a verbose message for installation of built-in plugins", async function() {
             readDir.returns(Promise.resolve([]));
 
             await sut.initPlugins();
@@ -55,7 +55,7 @@ describe("plugins/index.js", function() {
             logVerbose.should.have.been.calledWith("Loading built-in plugins");
         });
 
-        it("should install built-in plugin convert", async function () {
+        it("should install built-in plugin convert", async function() {
             readDir.returns(Promise.resolve([]));
 
             await sut.initPlugins();
@@ -63,7 +63,7 @@ describe("plugins/index.js", function() {
             installPlugin.should.have.been.calledWith(convert);
         });
 
-        it("should install built-in plugin copy", async function () {
+        it("should install built-in plugin copy", async function() {
             readDir.returns(Promise.resolve([]));
 
             await sut.initPlugins();
@@ -71,7 +71,7 @@ describe("plugins/index.js", function() {
             installPlugin.should.have.been.calledWith(copy);
         });
 
-        it("should install built-in plugin pug", async function () {
+        it("should install built-in plugin pug", async function() {
             readDir.returns(Promise.resolve([]));
 
             await sut.initPlugins();
@@ -79,7 +79,7 @@ describe("plugins/index.js", function() {
             installPlugin.should.have.been.calledWith(pug);
         });
 
-        it("should log a verbose message for installation of project plugins", async function () {
+        it("should log a verbose message for installation of project plugins", async function() {
             readDir.returns(Promise.resolve([]));
 
             await sut.initPlugins();
@@ -87,7 +87,7 @@ describe("plugins/index.js", function() {
             logVerbose.should.have.been.calledWith("Loading project plugins");
         });
 
-        it("should read additional plugins from configured plugin directory", async function () {
+        it("should read additional plugins from configured plugin directory", async function() {
             const pluginDirectory = "./plugins";
 
             getConfig.withArgs("pluginDirectory").returns(pluginDirectory);
@@ -98,12 +98,14 @@ describe("plugins/index.js", function() {
             readDir.should.have.been.calledWith(pluginDirectory);
         });
 
-        it("should handle multiple additional plugins", async function () {
+        it("should handle multiple additional plugins", async function() {
             const pluginFilenames = ["plugin1.js", "plugin2.js", "plugin3.js"];
 
             getConfig.returns("");
             readDir.returns(Promise.resolve(pluginFilenames));
-            stat.returns(Promise.resolve({ isDirectory: () => false }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => false
+            }));
             requireModule.returns({});
 
             await sut.initPlugins();
@@ -111,36 +113,42 @@ describe("plugins/index.js", function() {
             requireModule.should.have.callCount(pluginFilenames.length);
         });
 
-        it("should ignore files without the .js extension", async function () {
+        it("should ignore files without the .js extension", async function() {
             const pluginFilename = "plugin";
 
             getConfig.returns("");
             readDir.returns(Promise.resolve([pluginFilename]));
-            stat.returns(Promise.resolve({ isDirectory: () => false }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => false
+            }));
 
             await sut.initPlugins();
 
             requireModule.should.not.have.been.called;
         });
 
-        it("should ignore hidden files", async function () {
+        it("should ignore hidden files", async function() {
             const pluginFilename = ".plugin.js";
 
             getConfig.returns("");
             readDir.returns(Promise.resolve([pluginFilename]));
-            stat.returns(Promise.resolve({ isDirectory: () => false }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => false
+            }));
 
             await sut.initPlugins();
 
             requireModule.should.not.have.been.called;
         });
 
-        it("should handle subdirectories as plugins", async function () {
+        it("should handle subdirectories as plugins", async function() {
             const pluginFilename = "plugin";
 
             getConfig.returns("");
             readDir.returns(Promise.resolve([pluginFilename]));
-            stat.returns(Promise.resolve({ isDirectory: () => true }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => true
+            }));
             requireModule.returns({});
 
             await sut.initPlugins();
@@ -148,25 +156,29 @@ describe("plugins/index.js", function() {
             requireModule.should.have.been.calledWithMatch(sinon.match(pluginFilename));
         });
 
-        it("should ignore hidden directories", async function () {
+        it("should ignore hidden directories", async function() {
             const pluginFilename = ".plugin";
 
             getConfig.returns("");
             readDir.returns(Promise.resolve([pluginFilename]));
-            stat.returns(Promise.resolve({ isDirectory: () => true }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => true
+            }));
 
             await sut.initPlugins();
 
             requireModule.should.not.have.been.called;
         });
 
-        it("should load project plugin using its absolute path", async function () {
+        it("should load project plugin using its absolute path", async function() {
             const pluginDirectory = "./plugins";
             const pluginFilename = "plugin.js";
 
             getConfig.returns(pluginDirectory);
             readDir.returns(Promise.resolve([pluginFilename]));
-            stat.returns(Promise.resolve({ isDirectory: () => false }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => false
+            }));
             requireModule.returns({});
 
             await sut.initPlugins();
@@ -180,20 +192,26 @@ describe("plugins/index.js", function() {
 
             getConfig.returns("");
             readDir.returns(Promise.resolve([pluginFilename]));
-            stat.returns(Promise.resolve({ isDirectory: () => false }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => false
+            }));
             requireModule.throws(error);
 
             return sut.initPlugins().should.be.rejectedWith(LerretError, util.format("Cannot load module %s; $s", path.resolve(pluginFilename), error.message));
         });
 
-        it("should install project plugin after loading it", async function () {
+        it("should install project plugin after loading it", async function() {
             const pluginDirectory = "./plugins";
             const pluginFilename = "plugin.js";
-            const pluginModule = { name: "plugin" };
+            const pluginModule = {
+                name: "plugin"
+            };
 
             getConfig.returns(pluginDirectory);
             readDir.returns(Promise.resolve([pluginFilename]));
-            stat.returns(Promise.resolve({ isDirectory: () => false }));
+            stat.returns(Promise.resolve({
+                isDirectory: () => false
+            }));
             requireModule.returns(pluginModule);
 
             await sut.initPlugins();
@@ -201,7 +219,7 @@ describe("plugins/index.js", function() {
             installPlugin.should.have.been.calledWith(pluginModule);
         });
 
-        it("should allow plugin directory to be non-existent", async function () {
+        it("should allow plugin directory to be non-existent", async function() {
             const error = new Error();
             error.code = "ENOENT";
 
@@ -213,8 +231,8 @@ describe("plugins/index.js", function() {
         });
     });
 
-    describe("callPlugins(content)", function () {
-        it("should generate plugin sequence with configured plugins", async function () {
+    describe("callPlugins(content)", function() {
+        it("should generate plugin sequence with configured plugins", async function() {
             const pluginList = ["plugin1", "plugin2"];
 
             getConfig.withArgs("plugins").returns(pluginList);
@@ -225,7 +243,7 @@ describe("plugins/index.js", function() {
             getPluginSequence.should.be.calledWith(pluginList);
         });
 
-        it("should execute plugin sequence on content", async function () {
+        it("should execute plugin sequence on content", async function() {
             const content = "content";
             const pluginSequence = sandbox.stub();
 
@@ -237,7 +255,7 @@ describe("plugins/index.js", function() {
             pluginSequence.should.have.been.calledWith(content);
         });
 
-        it("should return result of executing plugin sequence", async function () {
+        it("should return result of executing plugin sequence", async function() {
             const content = "content";
             const pluginSequence = sandbox.stub();
 

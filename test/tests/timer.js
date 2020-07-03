@@ -14,27 +14,27 @@ describe("timer.js", function() {
     let format;
     let hrtime;
 
-    beforeEach(function () {
+    beforeEach(function() {
         format = sandbox.stub();
         hrtime = sandbox.stub(process, "hrtime");
 
         sut.__set__("format", format);
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("stamp(event)", function () {
-        it("should obtain the current timestamp", function () {
+    describe("stamp(event)", function() {
+        it("should obtain the current timestamp", function() {
             sut.create().stamp("");
 
             hrtime.should.have.been.called;
         });
     });
 
-    describe("since(event)", function () {
-        it("should calculate the time interval", function () {
+    describe("since(event)", function() {
+        it("should calculate the time interval", function() {
             const start = 123;
 
             hrtime.returns(start);
@@ -44,7 +44,7 @@ describe("timer.js", function() {
             hrtime.should.have.been.calledWith(start);
         });
 
-        it("should format the time interval", function () {
+        it("should format the time interval", function() {
             const duration = 456;
 
             hrtime.onSecondCall().returns(duration);
@@ -54,7 +54,7 @@ describe("timer.js", function() {
             format.should.have.been.calledWith(duration);
         });
 
-        it("should return the formatted time interval", function () {
+        it("should return the formatted time interval", function() {
             const formatted = "some seconds";
 
             format.returns(formatted);
@@ -65,7 +65,7 @@ describe("timer.js", function() {
         });
     });
 
-    it("should allow multiple events to be timed", function () {
+    it("should allow multiple events to be timed", function() {
         const start1 = 1;
         const start2 = 2;
         const duration1 = 3;

@@ -24,7 +24,7 @@ describe("plugins/plugins.js", function() {
     let timeSince;
     let timeStamp;
 
-    beforeEach(function () {
+    beforeEach(function() {
         createTimer = sandbox.stub(timer, "create");
         logInfo = sandbox.stub(log, "info");
         logDebug = sandbox.stub(log, "debug");
@@ -32,17 +32,23 @@ describe("plugins/plugins.js", function() {
         timeStamp = sandbox.stub();
 
         //default stubs
-        createTimer.returns({ stamp: timeStamp, since: timeSince });
-        timeStamp.returns({ stamp: timeStamp, since: timeSince });
+        createTimer.returns({
+            stamp: timeStamp,
+            since: timeSince
+        });
+        timeStamp.returns({
+            stamp: timeStamp,
+            since: timeSince
+        });
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sut._uninstallAllPlugins();
         sandbox.restore();
     });
 
-    describe("installPlugin(plugin)", function () {
-        it("should log a debug message when installing a plugin", function () {
+    describe("installPlugin(plugin)", function() {
+        it("should log a debug message when installing a plugin", function() {
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -53,7 +59,7 @@ describe("plugins/plugins.js", function() {
             logDebug.should.have.been.calledWith("Installing plugin %s", plugin.name);
         });
 
-        it("should throw a LerretError when installing a plugin without a name", function () {
+        it("should throw a LerretError when installing a plugin without a name", function() {
             const plugin = {
                 processSite: sandbox.stub()
             };
@@ -61,7 +67,7 @@ describe("plugins/plugins.js", function() {
             (() => sut.installPlugin(plugin)).should.throw(LerretError, "Plugin does not define a name");
         });
 
-        it("should throw a LerretError when installing a plugin without a processSite, processAlbum or processImage function", function () {
+        it("should throw a LerretError when installing a plugin without a processSite, processAlbum or processImage function", function() {
             const plugin = {
                 name: "plugin"
             };
@@ -69,7 +75,7 @@ describe("plugins/plugins.js", function() {
             (() => sut.installPlugin(plugin)).should.throw(LerretError, util.format("Plugin %s does not define a processSite, processAlbum or processImage function", plugin.name));
         });
 
-        it("should throw a LerretError when installing a plugin which shares the name of an already installed plugin", function () {
+        it("should throw a LerretError when installing a plugin which shares the name of an already installed plugin", function() {
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -81,9 +87,11 @@ describe("plugins/plugins.js", function() {
         });
     });
 
-    describe("getPluginSequence(name)(content)", function () {
-        it("should call processSite with content and config", async function () {
-            const content = { name: "site" };
+    describe("getPluginSequence(name)(content)", function() {
+        it("should call processSite with content and config", async function() {
+            const content = {
+                name: "site"
+            };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -96,10 +104,16 @@ describe("plugins/plugins.js", function() {
             plugin.processSite.should.have.been.calledWith(content, config);
         });
 
-        it("should call processAlbum with album, index, length, content and config for each album", async function () {
+        it("should call processAlbum with album, index, length, content and config for each album", async function() {
             const content = {
                 name: "site",
-                albums: [{ id: "album1" }, { id: "album2" }, { id: "album3" }]
+                albums: [{
+                    id: "album1"
+                }, {
+                    id: "album2"
+                }, {
+                    id: "album3"
+                }]
             };
             const plugin = {
                 name: "plugin",
@@ -115,12 +129,29 @@ describe("plugins/plugins.js", function() {
             plugin.processAlbum.should.have.been.calledWith(content.albums[2], 2, 3, content, config);
         });
 
-        it("should call processImage with image, index, length, album, content and config for each image", async function () {
+        it("should call processImage with image, index, length, album, content and config for each image", async function() {
             const content = {
                 name: "site",
-                albums: [
-                    { id: "album1", images: [{ id: "image1" }, { id: "image2" }, { id: "image3" }] },
-                    { id: "album2", images: [{ id: "image4" }, { id: "image5" }, { id: "image6" }] }
+                albums: [{
+                        id: "album1",
+                        images: [{
+                            id: "image1"
+                        }, {
+                            id: "image2"
+                        }, {
+                            id: "image3"
+                        }]
+                    },
+                    {
+                        id: "album2",
+                        images: [{
+                            id: "image4"
+                        }, {
+                            id: "image5"
+                        }, {
+                            id: "image6"
+                        }]
+                    }
                 ]
             };
             const plugin = {
@@ -140,8 +171,16 @@ describe("plugins/plugins.js", function() {
             plugin.processImage.should.have.been.calledWith(content.albums[1].images[2], 2, 3, content.albums[1], content, config);
         });
 
-        it("should call processSite, processAlbum and processImage are all called when used together", async function () {
-            const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
+        it("should call processSite, processAlbum and processImage are all called when used together", async function() {
+            const content = {
+                name: "site",
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }]
+                }]
+            };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub(),
@@ -158,8 +197,10 @@ describe("plugins/plugins.js", function() {
             plugin.processImage.should.have.been.called;
         });
 
-        it("should call plugins in sequence", async function () {
-            const content = { name: "site" };
+        it("should call plugins in sequence", async function() {
+            const content = {
+                name: "site"
+            };
             const pluginA = {
                 name: "pluginA",
                 processSite: sandbox.stub()
@@ -182,9 +223,13 @@ describe("plugins/plugins.js", function() {
             sinon.assert.callOrder(pluginB.processSite, pluginA.processSite, pluginC.processSite);
         });
 
-        it("should call plugin with the content returned by the previous plugin", async function () {
-            const content = { name: "site" };
-            const contentNew = { name: "new site" };
+        it("should call plugin with the content returned by the previous plugin", async function() {
+            const content = {
+                name: "site"
+            };
+            const contentNew = {
+                name: "new site"
+            };
             const pluginA = {
                 name: "pluginA",
                 processSite: sandbox.stub()
@@ -204,12 +249,16 @@ describe("plugins/plugins.js", function() {
             pluginB.processSite.should.have.been.calledWith(contentNew);
         });
 
-        it("should update content with the value returned by processSite", async function () {
-            const content = { name: "site" };
-            const contentNew = { name: "new site" };
+        it("should update content with the value returned by processSite", async function() {
+            const content = {
+                name: "site"
+            };
+            const contentNew = {
+                name: "new site"
+            };
             const plugin = {
                 name: "plugin",
-                processSite: function () {
+                processSite: function() {
                     return contentNew;
                 }
             };
@@ -221,18 +270,30 @@ describe("plugins/plugins.js", function() {
             result.should.eql(contentNew);
         });
 
-        it("should update content with the value returned by processAlbum", async function () {
+        it("should update content with the value returned by processAlbum", async function() {
             const content = {
                 name: "site",
-                albums: [{ id: "album1" }, { id: "album2" }, { id: "album3" }]
+                albums: [{
+                    id: "album1"
+                }, {
+                    id: "album2"
+                }, {
+                    id: "album3"
+                }]
             };
             const contentNew = {
                 name: "site",
-                albums: [{ id: "new album1" }, { id: "new album2" }, { id: "new album3" }]
+                albums: [{
+                    id: "new album1"
+                }, {
+                    id: "new album2"
+                }, {
+                    id: "new album3"
+                }]
             };
             const plugin = {
                 name: "plugin",
-                processAlbum: function (album, index) {
+                processAlbum: function(album, index) {
                     return contentNew.albums[index];
                 }
             };
@@ -244,18 +305,36 @@ describe("plugins/plugins.js", function() {
             result.should.eql(contentNew);
         });
 
-        it("should update content with the value returned by processImage", async function () {
+        it("should update content with the value returned by processImage", async function() {
             const content = {
                 name: "site",
-                albums: [{ id: "album1", images: [{ id: "image1" }, { id: "image2" }, { id: "image3" }] }]
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }, {
+                        id: "image2"
+                    }, {
+                        id: "image3"
+                    }]
+                }]
             };
             const contentNew = {
                 name: "site",
-                albums: [{ id: "album1", images: [{ id: "new image1" }, { id: "new image2" }, { id: "new image3" }] }]
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "new image1"
+                    }, {
+                        id: "new image2"
+                    }, {
+                        id: "new image3"
+                    }]
+                }]
             };
             const plugin = {
                 name: "plugin",
-                processImage: function (image, index) {
+                processImage: function(image, index) {
                     return contentNew.albums[0].images[index];
                 }
             };
@@ -267,12 +346,14 @@ describe("plugins/plugins.js", function() {
             result.should.eql(contentNew);
         });
 
-        it("processSite's content argument should be effectively immutable", async function () {
-            const content = { name: "site" };
+        it("processSite's content argument should be effectively immutable", async function() {
+            const content = {
+                name: "site"
+            };
             const contentClone = _.clone(content);
             const plugin = {
                 name: "plugin",
-                processSite: function (content) {
+                processSite: function(content) {
                     content.name = "new " + content.name;
                 }
             };
@@ -284,15 +365,21 @@ describe("plugins/plugins.js", function() {
             content.should.eql(contentClone);
         });
 
-        it("processAlbum's album argument should be effectively immutable", async function () {
+        it("processAlbum's album argument should be effectively immutable", async function() {
             const content = {
                 name: "site",
-                albums: [{ id: "album1" }, { id: "album2" }, { id: "album3" }]
+                albums: [{
+                    id: "album1"
+                }, {
+                    id: "album2"
+                }, {
+                    id: "album3"
+                }]
             };
             const contentClone = _.clone(content);
             const plugin = {
                 name: "plugin",
-                processAlbum: function (album) {
+                processAlbum: function(album) {
                     album.id = "new " + album.id;
                 }
             };
@@ -304,15 +391,24 @@ describe("plugins/plugins.js", function() {
             content.should.eql(contentClone);
         });
 
-        it("processImage's album argument should be effectively immutable", async function () {
+        it("processImage's album argument should be effectively immutable", async function() {
             const content = {
                 name: "site",
-                albums: [{ id: "album1", images: [{ id: "image1" }, { id: "image2" }, { id: "image3" }] }]
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }, {
+                        id: "image2"
+                    }, {
+                        id: "image3"
+                    }]
+                }]
             };
             const contentClone = _.clone(content);
             const plugin = {
                 name: "plugin",
-                processImage: function (album) {
+                processImage: function(album) {
                     album.id = "new " + album.id;
                 }
             };
@@ -324,15 +420,24 @@ describe("plugins/plugins.js", function() {
             content.should.eql(contentClone);
         });
 
-        it("processImage's image argument should be effectively immutable", async function () {
+        it("processImage's image argument should be effectively immutable", async function() {
             const content = {
                 name: "site",
-                albums: [{ id: "album1", images: [{ id: "image1" }, { id: "image2" }, { id: "image3" }] }]
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }, {
+                        id: "image2"
+                    }, {
+                        id: "image3"
+                    }]
+                }]
             };
             const contentClone = _.clone(content);
             const plugin = {
                 name: "plugin",
-                processImage: function (image) {
+                processImage: function(image) {
                     image.id = "new " + image.id;
                 }
             };
@@ -344,8 +449,10 @@ describe("plugins/plugins.js", function() {
             content.should.eql(contentClone);
         });
 
-        it("should log an info message when calling a plugin", async function () {
-            const content = { name: "site" };
+        it("should log an info message when calling a plugin", async function() {
+            const content = {
+                name: "site"
+            };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -358,8 +465,10 @@ describe("plugins/plugins.js", function() {
             logInfo.should.have.been.calledWith("Calling plugin %s", plugin.name);
         });
 
-        it("should log an info message when calling a plugin finishes", async function () {
-            const content = { name: "site" };
+        it("should log an info message when calling a plugin finishes", async function() {
+            const content = {
+                name: "site"
+            };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -377,8 +486,16 @@ describe("plugins/plugins.js", function() {
             logInfo.should.have.been.calledWith("Plugin %s finished in %s", plugin.name, duration);
         });
 
-        it("should begin timing a plugin before calling processSite, processAlbum and processImage", async function () {
-            const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
+        it("should begin timing a plugin before calling processSite, processAlbum and processImage", async function() {
+            const content = {
+                name: "site",
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }]
+                }]
+            };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub(),
@@ -395,8 +512,16 @@ describe("plugins/plugins.js", function() {
             sinon.assert.callOrder(timeStamp, plugin.processImage);
         });
 
-        it("should stop timing a plugin after calling processSite, processAlbum and processImage", async function () {
-            const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
+        it("should stop timing a plugin after calling processSite, processAlbum and processImage", async function() {
+            const content = {
+                name: "site",
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }]
+                }]
+            };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub(),
@@ -413,14 +538,16 @@ describe("plugins/plugins.js", function() {
             sinon.assert.callOrder(plugin.processImage, timeSince);
         });
 
-        it("should throw a LerretError if a plugin is not found", function () {
+        it("should throw a LerretError if a plugin is not found", function() {
             const name = "plugin";
 
             return sut.getPluginSequence([name])({}).should.be.rejectedWith(LerretError, util.format("Plugin %s could not be found", name));
         });
 
-        it("should throw a LerretError if processSite throws an error", function () {
-            const content = { name: "site" };
+        it("should throw a LerretError if processSite throws an error", function() {
+            const content = {
+                name: "site"
+            };
             const plugin = {
                 name: "plugin",
                 processSite: sandbox.stub()
@@ -434,8 +561,16 @@ describe("plugins/plugins.js", function() {
             return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(LerretError, util.format("Plugin %s threw an error; %s", plugin.name, error.message));
         });
 
-        it("should throw a LerretError if processAlbum throws an error", function () {
-            const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
+        it("should throw a LerretError if processAlbum throws an error", function() {
+            const content = {
+                name: "site",
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }]
+                }]
+            };
             const plugin = {
                 name: "plugin",
                 processAlbum: sandbox.stub()
@@ -449,8 +584,16 @@ describe("plugins/plugins.js", function() {
             return sut.getPluginSequence([plugin.name])(content).should.be.rejectedWith(LerretError, util.format("Plugin %s threw an error; %s", plugin.name, error.message));
         });
 
-        it("should throw a LerretError if processImage throws an error", function () {
-            const content = { name: "site", albums: [{ id: "album1", images: [{ id: "image1" }] }] };
+        it("should throw a LerretError if processImage throws an error", function() {
+            const content = {
+                name: "site",
+                albums: [{
+                    id: "album1",
+                    images: [{
+                        id: "image1"
+                    }]
+                }]
+            };
             const plugin = {
                 name: "plugin",
                 processImage: sandbox.stub()

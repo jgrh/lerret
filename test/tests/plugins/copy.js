@@ -22,7 +22,7 @@ describe("plugins/copy.js", function() {
     let logVerbose;
     let pipe;
 
-    beforeEach(function () {
+    beforeEach(function() {
         createImageFileStream = sandbox.stub(writer, "createImageFileStream");
         createReadStream = sandbox.stub(fs, "createReadStream");
         getConfig = sandbox.stub(config, "get");
@@ -30,34 +30,46 @@ describe("plugins/copy.js", function() {
         pipe = sandbox.stub();
 
         //default stubs
-        createReadStream.returns({ pipe: pipe });
+        createReadStream.returns({
+            pipe: pipe
+        });
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    it("exports name", function () {
+    it("exports name", function() {
         sut.name.should.equal("copy");
     });
 
-    it("exports processImage", function () {
+    it("exports processImage", function() {
         sut.processImage.should.not.be.undefined;
     });
 
-    describe("processImage(image, index, length, album)", function () {
-        it("should log a verbose message", async function () {
-            const album = { id: "album" };
-            const image = { id: "image", path: "./path/to/image.jpg" };
+    describe("processImage(image, index, length, album)", function() {
+        it("should log a verbose message", async function() {
+            const album = {
+                id: "album"
+            };
+            const image = {
+                id: "image",
+                path: "./path/to/image.jpg"
+            };
 
             await sut.processImage(image, 0, 0, album);
 
             logVerbose.should.have.been.calledWith("Copying image %s/%s", album.id, image.id);
         });
 
-        it("should create an output stream to the configured filename, defaulting to the current filename", async function () {
-            const album = { id: "album" };
-            const image = { id: "image", path: "./path/to/image.jpg" };
+        it("should create an output stream to the configured filename, defaulting to the current filename", async function() {
+            const album = {
+                id: "album"
+            };
+            const image = {
+                id: "image",
+                path: "./path/to/image.jpg"
+            };
             const filename = "image.jpg";
 
             getConfig.withArgs("copy.filename", path.basename(image.path)).returns(filename);
@@ -67,26 +79,32 @@ describe("plugins/copy.js", function() {
             createImageFileStream.should.have.been.calledWith(album, image, filename);
         });
 
-        it("should create an input stream from the image's filename", async function () {
-            const image = { path: "./path/to/image.jpg" };
+        it("should create an input stream from the image's filename", async function() {
+            const image = {
+                path: "./path/to/image.jpg"
+            };
 
             await sut.processImage(image, 0, 0, {});
 
             createReadStream.should.have.been.calledWith(image.filename);
         });
 
-        it("should pipe the input stream to the output stream", async function () {
+        it("should pipe the input stream to the output stream", async function() {
             const stream = "stream";
 
             createImageFileStream.returns(Promise.resolve(stream));
 
-            await sut.processImage({ path: "./path/to/image.jpg" }, 0, 0, {});
+            await sut.processImage({
+                path: "./path/to/image.jpg"
+            }, 0, 0, {});
 
             pipe.should.have.been.calledWith(stream);
         });
 
-        it("should not return anything", async function () {
-            const result = await sut.processImage({ path: "./path/to/image" }, 0, 0, {});
+        it("should not return anything", async function() {
+            const result = await sut.processImage({
+                path: "./path/to/image"
+            }, 0, 0, {});
 
             assert(result === undefined);
         });

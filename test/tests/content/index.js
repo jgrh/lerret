@@ -20,7 +20,7 @@ describe("content/index.js", function() {
     let loadAlbums;
     let readYaml;
 
-    beforeEach(function () {
+    beforeEach(function() {
         getConfig = sandbox.stub(config, "get");
         loadAlbums = sandbox.stub(albums, "loadAlbums");
         readYaml = sandbox.stub(helpers, "readYaml");
@@ -29,12 +29,12 @@ describe("content/index.js", function() {
         getConfig.returns("");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("loadContent()", function () {
-        it("should read site.yaml from configured content directory", async function () {
+    describe("loadContent()", function() {
+        it("should read site.yaml from configured content directory", async function() {
             const contentDirectory = "./content";
 
             getConfig.withArgs("contentDirectory").returns(contentDirectory);
@@ -45,8 +45,10 @@ describe("content/index.js", function() {
             readYaml.should.have.been.calledWith(path.join(contentDirectory, "site.yaml"));
         });
 
-        it("should return parsed site.yaml", async function () {
-            const site = { name: "Site" };
+        it("should return parsed site.yaml", async function() {
+            const site = {
+                name: "Site"
+            };
 
             readYaml.returns(Promise.resolve(_.clone(site)));
 
@@ -55,8 +57,12 @@ describe("content/index.js", function() {
             _.each(site, (value, key) => result.should.have.property(key, value));
         });
 
-        it("should extend parsed site.yaml with albums", async function () {
-            const albums = [{ id: "album1" }, { id: "album2" }];
+        it("should extend parsed site.yaml with albums", async function() {
+            const albums = [{
+                id: "album1"
+            }, {
+                id: "album2"
+            }];
 
             readYaml.returns(Promise.resolve({}));
             loadAlbums.returns(Promise.resolve(albums));
@@ -66,10 +72,16 @@ describe("content/index.js", function() {
             result.should.have.property("albums", albums);
         });
 
-        it("should overwrite existing albums property from site.yaml if there is one", async function () {
-            const albums = [{ id: "album1" }, { id: "album2" }];
+        it("should overwrite existing albums property from site.yaml if there is one", async function() {
+            const albums = [{
+                id: "album1"
+            }, {
+                id: "album2"
+            }];
 
-            readYaml.returns(Promise.resolve({ albums: "Original Value" }));
+            readYaml.returns(Promise.resolve({
+                albums: "Original Value"
+            }));
             loadAlbums.returns(Promise.resolve(albums));
 
             const result = await sut.loadContent();

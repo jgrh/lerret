@@ -21,7 +21,7 @@ describe("generate.js", function() {
     let logError;
     let logInfo;
 
-    beforeEach(function () {
+    beforeEach(function() {
         callPlugins = sandbox.stub(plugins, "callPlugins");
         initPlugins = sandbox.stub(plugins, "initPlugins");
         loadContent = sandbox.stub(content, "loadContent");
@@ -29,12 +29,12 @@ describe("generate.js", function() {
         logInfo = sandbox.stub(log, "info");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
-    describe("generate()", function () {
-        it("should initilise plugins", async function () {
+    describe("generate()", function() {
+        it("should initilise plugins", async function() {
             initPlugins.returns(Promise.resolve());
 
             await sut.generate();
@@ -42,7 +42,7 @@ describe("generate.js", function() {
             initPlugins.should.have.been.called;
         });
 
-        it("should log an error if initPlugins throws a LerretError", async function () {
+        it("should log an error if initPlugins throws a LerretError", async function() {
             const error = new LerretError("error");
 
             initPlugins.returns(Promise.resolve().throw(error));
@@ -52,7 +52,7 @@ describe("generate.js", function() {
             logError.should.have.been.calledWith(error.message);
         });
 
-        it("should load content", async function () {
+        it("should load content", async function() {
             initPlugins.returns(Promise.resolve());
 
             await sut.generate();
@@ -60,7 +60,7 @@ describe("generate.js", function() {
             loadContent.should.have.been.called;
         });
 
-        it("should log an error if loadContent throws a LerretError", async function () {
+        it("should log an error if loadContent throws a LerretError", async function() {
             const error = new LerretError("error");
 
             initPlugins.returns(Promise.resolve());
@@ -71,7 +71,7 @@ describe("generate.js", function() {
             logError.should.have.been.calledWith(error.message);
         });
 
-        it("should run plugins on content", async function () {
+        it("should run plugins on content", async function() {
             const loaded = "content";
 
             initPlugins.returns(Promise.resolve());
@@ -82,7 +82,7 @@ describe("generate.js", function() {
             callPlugins.should.have.been.calledWith(loaded);
         });
 
-        it("should initilise plugins before running them", async function () {
+        it("should initilise plugins before running them", async function() {
             initPlugins.returns(Promise.resolve());
 
             await sut.generate();
@@ -90,7 +90,7 @@ describe("generate.js", function() {
             sinon.assert.callOrder(initPlugins, callPlugins);
         });
 
-        it("should log an error if callPlugins throws a LerretError", async function () {
+        it("should log an error if callPlugins throws a LerretError", async function() {
             const error = new LerretError("error");
 
             initPlugins.returns(Promise.resolve());
@@ -101,7 +101,7 @@ describe("generate.js", function() {
             logError.should.have.been.calledWith(error.message);
         });
 
-        it("should log an info message on success", async function () {
+        it("should log an info message on success", async function() {
             initPlugins.returns(Promise.resolve());
 
             await sut.generate();

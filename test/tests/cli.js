@@ -21,7 +21,7 @@ describe("cli", function() {
     let initCommand;
     let printCommand;
 
-    beforeEach(function () {
+    beforeEach(function() {
         sut = require("../../lib/cli");
         generateCommand = sandbox.stub(generate, "generate");
         helpCommand = sandbox.stub(commander, "help");
@@ -31,31 +31,31 @@ describe("cli", function() {
         sandbox.stub(process, "exit");
     });
 
-    afterEach(function () {
+    afterEach(function() {
         delete require.cache[require.resolve("../../lib/cli")];
         delete require.cache[require.resolve("commander")];
         sandbox.restore();
     });
 
-    it("should print help if no command is supplied", function () {
-        process.argv = [ "", "" ];
+    it("should print help if no command is supplied", function() {
+        process.argv = ["", ""];
 
         sut();
 
         helpCommand.should.be.calledOnce;
     });
 
-    describe("generate command", function () {
-        it("should call generate module", function () {
-            process.argv = [ "", "", "generate" ];
+    describe("generate command", function() {
+        it("should call generate module", function() {
+            process.argv = ["", "", "generate"];
 
             sut();
 
             generateCommand.should.be.calledOnce;
         });
 
-        it("-v option should increase logging verbosity", function () {
-            process.argv = [ "", "", "generate", "-v" ];
+        it("-v option should increase logging verbosity", function() {
+            process.argv = ["", "", "generate", "-v"];
 
             sut();
 
@@ -63,17 +63,17 @@ describe("cli", function() {
         });
     });
 
-    describe("init command", function () {
-        it("should call init module", function () {
-            process.argv = [ "", "", "init" ];
+    describe("init command", function() {
+        it("should call init module", function() {
+            process.argv = ["", "", "init"];
 
             sut();
 
             initCommand.should.be.calledOnce;
         });
 
-        it("-v option should increase logging verbosity", function () {
-            process.argv = [ "", "", "init", "-v" ];
+        it("-v option should increase logging verbosity", function() {
+            process.argv = ["", "", "init", "-v"];
 
             sut();
 
@@ -81,25 +81,25 @@ describe("cli", function() {
         });
     });
 
-    describe("print command", function () {
-        it("should call print module", function () {
-            process.argv = [ "", "", "print" ];
+    describe("print command", function() {
+        it("should call print module", function() {
+            process.argv = ["", "", "print"];
 
             sut();
 
             printCommand.should.be.calledOnce;
         });
 
-        it("should pass --no-color argument to print module", function () {
-            process.argv = [ "", "", "print", "--no-color" ];
+        it("should pass --no-color argument to print module", function() {
+            process.argv = ["", "", "print", "--no-color"];
 
             sut();
 
             printCommand.should.be.calledWith(sinon.match.has("color", false));
         });
 
-        it("should pass --no-exif argument to print module", function () {
-            process.argv = [ "", "", "print", "--no-exif" ];
+        it("should pass --no-exif argument to print module", function() {
+            process.argv = ["", "", "print", "--no-exif"];
 
             sut();
 
