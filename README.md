@@ -13,6 +13,10 @@ Lerret supports GIF, JPEG, PNG and TIFF image formats. Lerret will also extract 
 
 ## Release Notes
 
+### 2.1.0
+
+* Enhance `pug` plugin to allow any of the three templates to be optional.
+
 ### 2.0.0
 
 * Support for Node versions 11 and earlier dropped.
@@ -147,7 +151,7 @@ The following configuration keys are available.
 
 #### pug
 
-The `pug` plugin may be used to render [Pug](https://pugjs.com) templates to HTML. The plugin expects three templates to exist: a home page template, an album template and an image template.
+The `pug` plugin may be used to render [Pug](https://pugjs.com) templates to HTML. The plugin looks for three optional templates: a home page template, an album template and an image template.
 
 The home page template is rendered once. It is provided with a context containing the following keys.
 
@@ -172,9 +176,9 @@ The following configuration keys are available. Paths are relative to the projec
 * `pug` (optional)
     * `helpers` (optional) - Path to a Node.js module of helper methods to pass to the template.
     * `templates` (required)
-        * `home` (required) - Path to a Pug template for the site home page.
-        * `album` (required) - Path to a Pug template for each album page.
-        * `image` (required) - Path to a Pug template for each image page.
+        * `home` (optional) - Path to a Pug template for the site home page.
+        * `album` (optional) - Path to a Pug template for each album page.
+        * `image` (optional) - Path to a Pug template for each image page.
 
 ### Writing your own plugins
 

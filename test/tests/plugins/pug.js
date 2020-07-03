@@ -64,6 +64,7 @@ describe("plugins/pug.js", function() {
         it("should log a verbose message", async function() {
             const homeTemplate = "./home.pug";
 
+            hasConfig.withArgs("pug.templates.home").returns(true);
             getConfig.withArgs("pug.templates.home").returns(homeTemplate);
             compileFile.returns(sandbox.stub());
 
@@ -75,6 +76,7 @@ describe("plugins/pug.js", function() {
         it("should compile configured home template", async function() {
             const homeTemplate = "./home.pug";
 
+            hasConfig.withArgs("pug.templates.home").returns(true);
             getConfig.withArgs("pug.templates.home").returns(homeTemplate);
             compileFile.returns(sandbox.stub());
 
@@ -92,6 +94,7 @@ describe("plugins/pug.js", function() {
             };
             const homeRenderer = sandbox.stub();
 
+            hasConfig.withArgs("pug.templates.home").returns(true);
             compileFile.returns(homeRenderer);
 
             await sut.processSite(content);
@@ -102,6 +105,7 @@ describe("plugins/pug.js", function() {
         it("should load helpers modules if configured", async function() {
             const helpersFilename = "./helpers.js";
 
+            hasConfig.withArgs("pug.templates.home").returns(true);
             hasConfig.withArgs("pug.helpers").returns(true);
             getConfig.withArgs("pug.helpers").returns(helpersFilename);
             compileFile.returns(sandbox.stub());
@@ -117,6 +121,7 @@ describe("plugins/pug.js", function() {
                 name: "helpers"
             };
 
+            hasConfig.withArgs("pug.templates.home").returns(true);
             hasConfig.withArgs("pug.helpers").returns(true);
             getConfig.withArgs("pug.helpers").returns("");
             requireModule.returns(helpers);
@@ -131,6 +136,7 @@ describe("plugins/pug.js", function() {
             const homeRenderer = sandbox.stub();
             const homeHtml = "html";
 
+            hasConfig.withArgs("pug.templates.home").returns(true);
             compileFile.returns(homeRenderer);
             homeRenderer.returns(homeHtml);
 
@@ -139,11 +145,21 @@ describe("plugins/pug.js", function() {
             writeRootFile.should.have.been.calledWith("index.html", homeHtml);
         });
 
-        it("should not return anything", async function() {
+        it("should not return anything after processing home template", async function() {
+            hasConfig.withArgs("pug.templates.home").returns(true);
             compileFile.returns(sandbox.stub());
 
             const result = await sut.processSite();
 
+            assert(result === undefined);
+        });
+
+        it("allows no home template to be configured", async function() {
+            hasConfig.withArgs("pug.templates.home").returns(false);
+
+            const result = await sut.processSite();
+
+            writeRootFile.should.not.have.been.called;
             assert(result === undefined);
         });
     });
@@ -155,6 +171,7 @@ describe("plugins/pug.js", function() {
                 id: "album"
             };
 
+            hasConfig.withArgs("pug.templates.album").returns(true);
             getConfig.withArgs("pug.templates.album").returns(albumTemplate);
             compileFile.returns(sandbox.stub());
 
@@ -166,6 +183,7 @@ describe("plugins/pug.js", function() {
         it("should compile configured album template", async function() {
             const albumTemplate = "./album.pug";
 
+            hasConfig.withArgs("pug.templates.album").returns(true);
             getConfig.withArgs("pug.templates.album").returns(albumTemplate);
             compileFile.returns(sandbox.stub());
 
@@ -186,6 +204,7 @@ describe("plugins/pug.js", function() {
             };
             const albumRenderer = sandbox.stub();
 
+            hasConfig.withArgs("pug.templates.album").returns(true);
             compileFile.returns(albumRenderer);
 
             await sut.processAlbum(album, 0, 1, content);
@@ -197,6 +216,7 @@ describe("plugins/pug.js", function() {
         it("should load helpers modules if configured", async function() {
             const helpersFilename = "./helpers.js";
 
+            hasConfig.withArgs("pug.templates.album").returns(true);
             hasConfig.withArgs("pug.helpers").returns(true);
             getConfig.withArgs("pug.helpers").returns(helpersFilename);
             compileFile.returns(sandbox.stub());
@@ -212,6 +232,7 @@ describe("plugins/pug.js", function() {
                 name: "helpers"
             };
 
+            hasConfig.withArgs("pug.templates.album").returns(true);
             hasConfig.withArgs("pug.helpers").returns(true);
             getConfig.withArgs("pug.helpers").returns("");
             requireModule.returns(helpers);
@@ -229,6 +250,7 @@ describe("plugins/pug.js", function() {
             const albumRenderer = sandbox.stub();
             const albumHtml = "html";
 
+            hasConfig.withArgs("pug.templates.album").returns(true);
             compileFile.returns(albumRenderer);
             albumRenderer.returns(albumHtml);
 
@@ -237,11 +259,21 @@ describe("plugins/pug.js", function() {
             writeAlbumFile.should.have.been.calledWith(album, "index.html", albumHtml);
         });
 
-        it("should not return anything", async function() {
+        it("should not return anything after processing album template", async function() {
+            hasConfig.withArgs("pug.templates.album").returns(true);
             compileFile.returns(sandbox.stub());
 
             const result = await sut.processAlbum({});
 
+            assert(result === undefined);
+        });
+
+        it("allows no album template to be configured", async function() {
+            hasConfig.withArgs("pug.templates.album").returns(false);
+
+            const result = await sut.processAlbum();
+
+            writeAlbumFile.should.not.have.been.called;
             assert(result === undefined);
         });
     });
@@ -256,6 +288,7 @@ describe("plugins/pug.js", function() {
                 id: "image"
             };
 
+            hasConfig.withArgs("pug.templates.image").returns(true);
             getConfig.withArgs("pug.templates.image").returns(imageTemplate);
             compileFile.returns(sandbox.stub());
 
@@ -267,6 +300,7 @@ describe("plugins/pug.js", function() {
         it("should compile configured image template", async function() {
             const imageTemplate = "./image.pug";
 
+            hasConfig.withArgs("pug.templates.image").returns(true);
             getConfig.withArgs("pug.templates.image").returns(imageTemplate);
             compileFile.returns(sandbox.stub());
 
@@ -290,6 +324,7 @@ describe("plugins/pug.js", function() {
             };
             const imageRenderer = sandbox.stub();
 
+            hasConfig.withArgs("pug.templates.image").returns(true);
             compileFile.returns(imageRenderer);
 
             await sut.processImage(image, 0, 1, album, content);
@@ -302,6 +337,7 @@ describe("plugins/pug.js", function() {
         it("should load helpers modules if configured", async function() {
             const helpersFilename = "./helpers.js";
 
+            hasConfig.withArgs("pug.templates.image").returns(true);
             hasConfig.withArgs("pug.helpers").returns(true);
             getConfig.withArgs("pug.helpers").returns(helpersFilename);
             compileFile.returns(sandbox.stub());
@@ -317,6 +353,7 @@ describe("plugins/pug.js", function() {
                 name: "helpers"
             };
 
+            hasConfig.withArgs("pug.templates.image").returns(true);
             hasConfig.withArgs("pug.helpers").returns(true);
             getConfig.withArgs("pug.helpers").returns("");
             requireModule.returns(helpers);
@@ -337,6 +374,7 @@ describe("plugins/pug.js", function() {
             const imageRenderer = sandbox.stub();
             const imageHtml = "html";
 
+            hasConfig.withArgs("pug.templates.image").returns(true);
             compileFile.returns(imageRenderer);
             imageRenderer.returns(imageHtml);
 
@@ -345,11 +383,21 @@ describe("plugins/pug.js", function() {
             writeImageFile.should.have.been.calledWith(album, image, "index.html", imageHtml);
         });
 
-        it("should not return anything", async function() {
+        it("should not return anything after processing image template", async function() {
+            hasConfig.withArgs("pug.templates.image").returns(true);
             compileFile.returns(sandbox.stub());
 
             const result = await sut.processImage({}, 0, 0, {});
 
+            assert(result === undefined);
+        });
+
+        it("allows no image template to be configured", async function() {
+            hasConfig.withArgs("pug.templates.image").returns(false);
+
+            const result = await sut.processImage();
+
+            writeImageFile.should.not.have.been.called;
             assert(result === undefined);
         });
     });
