@@ -42,7 +42,7 @@ describe("cli", function() {
 
         sut();
 
-        helpCommand.should.be.calledOnce;
+        helpCommand.should.be.called;
     });
 
     describe("generate command", function() {
